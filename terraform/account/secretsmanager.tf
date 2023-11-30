@@ -1,5 +1,5 @@
 resource "aws_secretsmanager_secret" "test_key" {
-  name       = "github-workflow-example-key"
+  name       = "aws-whitepaper-example-key"
   kms_key_id = aws_kms_key.secrets_manager.key_id
   provider   = aws.sandbox
 }
