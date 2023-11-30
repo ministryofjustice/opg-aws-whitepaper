@@ -5,15 +5,15 @@ terraform {
     key            = "aws-whitepaper/account/terraform.tfstate"
     encrypt        = true
     region         = "eu-west-1"
-    role_arn       = "arn:aws:iam::311462405659:role/gh-workflow-example-ci"
+    role_arn       = "arn:aws:iam::311462405659:role/sandbox-whitepaper-ci"
     dynamodb_table = "remote_lock"
   }
 
 }
 
 provider "github" {
-  token        = var.github_token
-  organization = "ministryofjustice"
+  token = var.github_token
+  owner = "ministryofjustice"
 }
 
 locals {
@@ -29,7 +29,6 @@ provider "aws" {
   }
 }
 
-
 variable "github_token" {
 }
 
@@ -40,9 +39,8 @@ variable "aws_secret_access_key" {
 }
 
 variable "DEFAULT_ROLE" {
-  default = "gh-workflow-example-ci"
+  default = "sandbox-whitepaper-ci"
 }
-
 
 data "aws_caller_identity" "current" {
   provider = aws.sandbox
