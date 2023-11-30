@@ -6,36 +6,6 @@ updates:
     directory: '/'
     schedule:
       interval: 'daily'
-  - package-ecosystem: 'gomod'
-    pull-request-branch-name:
-      separator: "-"  
-    directory: '/'
-    schedule:
-      interval: 'daily'
-  - package-ecosystem: 'composer'
-    pull-request-branch-name:
-      separator: "-"  
-    directory: '/'
-    schedule:
-      interval: 'daily'
-  - package-ecosystem: 'docker'
-    pull-request-branch-name:
-      separator: "-"  
-    directory: '/'
-    schedule:
-      interval: 'daily'
-  - package-ecosystem: 'npm'
-    pull-request-branch-name:
-      separator: "-"  
-    directory: '/'
-    schedule:
-      interval: 'daily'
-  - package-ecosystem: 'pip'
-    pull-request-branch-name:
-      separator: "-"  
-    directory: '/'
-    schedule:
-      interval: 'daily'
   - package-ecosystem: 'github-actions'
     pull-request-branch-name:
       separator: "-"  

@@ -64,118 +64,21 @@ jobs:
     uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-infrastructure-terraform.yml@v1.6.0
     with:
       directory: "./terraform"
-      terraform_version: "1.1.5"
+      terraform_version: "1.6.4"
       terraform_wrapper: false
 
-  # run linting for python
-  python_lint:
-    name: "Run python linting"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-application-python.yml@v1.6.0
-    with:
-      directory: "./service-app"
-      python_version: "3.10.2"
-
-  # SAST
-  # codeql for pythong
-  codeql_analysis:
-    name: "Run CodeQL against the code base"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-application-codeql-sast-to-github-security.yml@v1.6.0
-    with:
-      application_languages: '["python"]'
   # tfsec for terraform 
   tfsec_analysis:
     name: "Run TFSec against the code base"
     uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-infrastructure-tfsec-to-github-security.yml@v1.6.0
-  
-  # Docker build, trivy scan, ECR push as a matrix
-  # The matrix loops over each app to build in a complicated
-  # structure
-  # ADD IN ECR PUSH
-  build_scan_push:
-    name: "Docker build, trivy scan, ECR push"
-    runs-on: ubuntu-latest
-    # require all steps before this matrix to have passed
-    needs: [branch_name, workspace_name, semvar_tag, variable_generation_completed, tf_lint, python_lint, codeql_analysis, tfsec_analysis]
-    strategy:
-      fail-fast: true
-      matrix:
-        # services to scan over
-        data:
-          - docker_build_directory: "./service-app"
-            image_app_name: "helloworld"    
-            test_command: "ls -l"
-    # we use these a few times, so its easier to generate them once and env
-    # vars are visible in the output, so helps with debug
-    env:
-      local_docker_image: ${{ matrix.data.image_app_name }}:latest
-      sarif_file: trivy-results.sarif
-    steps:
-      - uses: actions/checkout@v3
-      - name: Show environment values
-        run: |
-          echo "local_docker_image: ${{ env.local_docker_image }}"
-          echo "sarif_file: ${{ env.sarif_file }}"
-      # build our sample docker image
-      - name: Docker build
-        # set the working directory to the variable
-        working-directory: ${{ matrix.data.docker_build_directory }}
-        run: |
-          docker build -t ${{ env.local_docker_image }} .
-      # to check if things worked, output docker image list
-      - name: Docker image list
-        run: |
-          docker images
-      - name: Trivy scan
-        uses: aquasecurity/trivy-action@0.5.1
-        with:
-          image-ref: ${{ env.local_docker_image }}
-          severity: "HIGH,CRITICAL"
-          format: 'sarif'
-          output: ${{ env.sarif_file }}
-      - name: Trivy scan upload to github
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: ${{ env.sarif_file }}
-      # for a lot of our services, there could be a test process here 
-      - name: Run Tests
-        run: |
-          ${{ matrix.data.test_command }}
-      ######
-      ## Push to ECR
-      ######
-      - uses: unfor19/install-aws-cli-action@v1
-      - name: Configure AWS Credentials With Assumed Role to Management
-        uses: aws-actions/configure-aws-credentials@v1.6.1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_ACTIONS }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ACTIONS }}
-          aws-region: eu-west-1
-          role-to-assume: arn:aws:iam::311462405659:role/gh-workflow-example-ci
-          role-duration-seconds: 900
-          role-session-name: OPGExampleWorkflowGithubAction
-      - name: ECR Login
-        id: login_ecr
-        uses: aws-actions/amazon-ecr-login@v1.5.1
-        with:
-          registries: 311462405659
-      - name: Push Container
-        env:
-          SEMVAR_TAG: ${{ needs.semvar_tag.outputs.tag }}
-          ECR_REGISTRY: ${{ steps.login_ecr.outputs.registry }}
-          ECR_REPOSITORY: github-workflow-example/helloworld
-        run: |
-          docker tag ${{ env.local_docker_image }} $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.SEMVAR_TAG }}
-          docker tag ${{ env.local_docker_image }} $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
           
   # example terraform build stage
   terraform_account_build:
     name: "Terraform Account Plan and Apply"
-    needs: [workspace_name, semvar_tag, build_scan_push]
+    needs: [workspace_name, semvar_tag]
     uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.6.0
     with:
-      terraform_version: "1.1.5"
+      terraform_version: "1.6.4"
       terraform_directory: "./terraform/account"
       terraform_apply: true
       # this would be replaced with the dynamic value from needs.workspace_name.output.name
@@ -194,7 +97,7 @@ jobs:
   end:
     name: 'End of workflow'
     runs-on: 'ubuntu-latest'
-    needs: [branch_name, workspace_name, semvar_tag, variable_generation_completed, build_scan_push, terraform_account_build]
+    needs: [branch_name, workspace_name, semvar_tag, variable_generation_completed, terraform_account_build]
     steps:
       - name: "Output data"
         run: |
