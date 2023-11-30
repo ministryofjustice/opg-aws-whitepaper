@@ -1,2 +1,4 @@
-# opg-template-repository
-Github "template" repository, from which to create new OPG Repositories: Managed by opg-org-infra &amp; Terraform
+# opg-aws-whitepaper
+
+
+[AWS Cloud Architecture](https://docs.aws.amazon.com/whitepapers/latest/web-application-hosting-best-practices/an-aws-cloud-architecture-for-web-hosting.html)
