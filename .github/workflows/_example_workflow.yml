@@ -64,7 +64,7 @@ jobs:
     uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-infrastructure-terraform.yml@v1.6.0
     with:
       directory: "./terraform"
-      terraform_version: "1.1.5"
+      terraform_version: "1.6.4"
       terraform_wrapper: false
 
   # tfsec for terraform 
@@ -78,7 +78,7 @@ jobs:
     needs: [workspace_name, semvar_tag]
     uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.6.0
     with:
-      terraform_version: "1.1.5"
+      terraform_version: "1.6.4"
       terraform_directory: "./terraform/account"
       terraform_apply: true
       # this would be replaced with the dynamic value from needs.workspace_name.output.name
