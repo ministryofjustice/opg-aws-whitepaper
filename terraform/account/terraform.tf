@@ -2,24 +2,13 @@ terraform {
 
   backend "s3" {
     bucket         = "opg.terraform.state"
-    key            = "github-workflow-example-account/terraform.tfstate"
+    key            = "aws-whitepaper/account/terraform.tfstate"
     encrypt        = true
     region         = "eu-west-1"
     role_arn       = "arn:aws:iam::311462405659:role/gh-workflow-example-ci"
     dynamodb_table = "remote_lock"
   }
 
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "3.40.0"
-    }
-    github = {
-      source  = "integrations/github"
-      version = "4.11.0"
-    }
-  }
-  required_version = ">= 1.1.0"
 }
 
 provider "github" {

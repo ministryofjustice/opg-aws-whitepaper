@@ -11,7 +11,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
   - repo: https://github.com/awslabs/git-secrets
-    rev: master
+    rev: v1.3.0
     hooks:
     - id: git-secrets
   - repo: https://github.com/zricethezav/gitleaks
