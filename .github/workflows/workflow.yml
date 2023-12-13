@@ -73,15 +73,15 @@ jobs:
     uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-infrastructure-tfsec-to-github-security.yml@v1.6.0
 
   # terraform apply stage
-  terraform_account_plan:
+  terraform_account:
     if: github.ref != 'refs/heads/main'
-    name: "Terraform Account Plan Only"
+    name: "Terraform Account [Apply: ${{ github.ref == 'refs/heads/main'}}]"
     needs: [tf_lint, workspace_name, semver_tag]
     uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.6.0
     with:
       terraform_version: "1.6.4"
       terraform_directory: "./terraform/account"
-      terraform_apply: false
+      terraform_apply: ${{ github.ref == 'refs/heads/main' && true || false }}
       terraform_workspace: "default" 
       is_ephemeral: false
     secrets:
@@ -89,28 +89,11 @@ jobs:
       AWS_SECRET_ACCESS_KEY_ACTIONS: ${{ secrets.AWS_SECRET_ACCESS_KEY_ACTIONS }}
       PAGERDUTY_TOKEN: "NONE"
       GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}          
-  # terraform apply stage
-  terraform_account_apply:
-    if: github.ref == 'refs/heads/main'
-    name: "Terraform Account Apply"
-    needs: [tf_lint, workspace_name, semver_tag]
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.6.0
-    with:
-      terraform_version: "1.6.4"
-      terraform_directory: "./terraform/account"
-      terraform_apply: true
-      terraform_workspace: "default" 
-      is_ephemeral: false
-    secrets:
-      AWS_ACCESS_KEY_ID_ACTIONS: ${{ secrets.AWS_ACCESS_KEY_ID_ACTIONS }}
-      AWS_SECRET_ACCESS_KEY_ACTIONS: ${{ secrets.AWS_SECRET_ACCESS_KEY_ACTIONS }}
-      PAGERDUTY_TOKEN: "NONE"
-      GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+  
   end:
     name: 'End of workflow'
     runs-on: 'ubuntu-latest'
-    needs: [terraform_account_plan, terraform_account_apply]
+    needs: [terraform_account]
     steps:
       - name: "Output data"
         run: |
