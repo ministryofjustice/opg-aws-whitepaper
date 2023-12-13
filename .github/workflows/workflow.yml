@@ -31,10 +31,10 @@ jobs:
     name: "Generate the workspace name"
     uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-workspace.yml@main
   
-  # generate smevar tag
-  semvar_tag:
+  # generate semver tag
+  semver_tag:
     needs: [branch_name]
-    name: "Generate the semvar tag value"
+    name: "Generate the semver tag value"
     uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-semvar-tag.yml@main
     with:
       branch_name: ${{ needs.branch_name.outputs.parsed }}"
@@ -43,7 +43,7 @@ jobs:
   # artificial step to output vars for easier debugging
   variable_generation_completed:
     runs-on: "ubuntu-latest"
-    needs: [branch_name, workspace_name, semvar_tag]
+    needs: [branch_name, workspace_name, semver_tag]
     name: "Generated standard variables"
     steps:
       - name: "Output generated variables"
@@ -54,8 +54,8 @@ jobs:
           echo "Alphanumeric: ${{ needs.branch_name.outputs.alphanumeric }}"
           echo "== WORKSPACE =="
           echo "Name: ${{ needs.workspace_name.outputs.name }}"
-          echo "== SEMVAR =="
-          echo "Tag: ${{ needs.semvar_tag.outputs.tag }}"
+          echo "== semver =="
+          echo "Tag: ${{ needs.semver_tag.outputs.tag }}"
 
   # LINTING
   # run linting for terraform
@@ -76,7 +76,7 @@ jobs:
   terraform_account_plan:
     if: github.ref !== 'refs/heads/main'
     name: "Terraform Account Plan Only"
-    needs: [workspace_name, semvar_tag]
+    needs: [workspace_name, semver_tag]
     uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.6.0
     with:
       terraform_version: "1.6.4"
@@ -93,7 +93,7 @@ jobs:
   terraform_account_apply:
     if: github.ref == 'refs/heads/main'
     name: "Terraform Account Apply"
-    needs: [workspace_name, semvar_tag]
+    needs: [workspace_name, semver_tag]
     uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.6.0
     with:
       terraform_version: "1.6.4"
@@ -110,7 +110,7 @@ jobs:
   end:
     name: 'End of workflow'
     runs-on: 'ubuntu-latest'
-    needs: [branch_name, workspace_name, semvar_tag, variable_generation_completed, terraform_account_plan, terraform_account_apply]
+    needs: [branch_name, workspace_name, semver_tag, variable_generation_completed, terraform_account_plan, terraform_account_apply]
     steps:
       - name: "Output data"
         run: |
@@ -120,8 +120,8 @@ jobs:
           echo "Alphanumeric: ${{ needs.branch_name.outputs.alphanumeric }}"
           echo "== WORKSPACE =="
           echo "Name: ${{ needs.workspace_name.outputs.name }}"
-          echo "== SEMVAR =="
-          echo "Tag: ${{ needs.semvar_tag.outputs.tag }}"
+          echo "== semver =="
+          echo "Tag: ${{ needs.semver_tag.outputs.tag }}"
           
 
 
