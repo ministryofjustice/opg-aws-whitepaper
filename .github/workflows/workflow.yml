@@ -1,4 +1,4 @@
-name: "[Example Workflow]"
+name: "[Workflow] Plan & Applt"
 
 on:
   workflow_dispatch:
