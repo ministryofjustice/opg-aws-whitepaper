@@ -48,7 +48,7 @@ jobs:
   
   # generate semver tag
   semver_tag:
-    needs: [branch_name, tfsec_analysis, tf_int]
+    needs: [branch_name, tfsec_analysis, tf_lint]
     name: "Generate the semver tag value"
     uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-semver-tag.yml@v1.32.0
     with:
