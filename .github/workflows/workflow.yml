@@ -31,9 +31,24 @@ jobs:
     name: "Generate the workspace name"
     uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-workspace.yml@v1.32.0
   
+  # LINTING
+  # run linting for terraform
+  tf_lint:
+    name: "Run terraform linting"
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-infrastructure-terraform.yml@v1.32.0
+    with:
+      directory: "./terraform"
+      terraform_version: "1.6.4"
+      terraform_wrapper: false
+
+  # tfsec for terraform 
+  tfsec_analysis:
+    name: "Run TFSec against the code base"
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-infrastructure-tfsec-to-github-security.yml@v1.32.0
+  
   # generate semver tag
   semver_tag:
-    needs: [branch_name]
+    needs: [branch_name, tfsec_analysis, tf_int]
     name: "Generate the semver tag value"
     uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-semver-tag.yml@v1.32.0
     with:
@@ -57,26 +72,11 @@ jobs:
           echo "== semver =="
           echo "Tag: ${{ needs.semver_tag.outputs.tag }}"
 
-  # LINTING
-  # run linting for terraform
-  tf_lint:
-    name: "Run terraform linting"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-infrastructure-terraform.yml@v1.32.0
-    with:
-      directory: "./terraform"
-      terraform_version: "1.6.4"
-      terraform_wrapper: false
-
-  # tfsec for terraform 
-  tfsec_analysis:
-    name: "Run TFSec against the code base"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-infrastructure-tfsec-to-github-security.yml@v1.32.0
-
   # terraform apply stage
   terraform_account:
     name: "Terraform Account [Apply: ${{ github.ref == 'refs/heads/main'}}]"
     needs: [variable_generation_completed, tf_lint, workspace_name, semver_tag]
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.33.0-fixbuildworkflow.6
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.33.0-fixbuildworkflow.8
     with:
       terraform_version: "1.6.4"
       terraform_directory: "./terraform/account"
