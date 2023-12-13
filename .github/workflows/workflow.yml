@@ -61,7 +61,7 @@ jobs:
   # run linting for terraform
   tf_lint:
     name: "Run terraform linting"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-infrastructure-terraform.yml@v1.6.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-infrastructure-terraform.yml@v1.23.0
     with:
       directory: "./terraform"
       terraform_version: "1.6.4"
@@ -70,14 +70,14 @@ jobs:
   # tfsec for terraform 
   tfsec_analysis:
     name: "Run TFSec against the code base"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-infrastructure-tfsec-to-github-security.yml@v1.6.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-infrastructure-tfsec-to-github-security.yml@v1.23.0
 
   # terraform apply stage
   terraform_account:
     if: github.ref != 'refs/heads/main'
     name: "Terraform Account [Apply: ${{ github.ref == 'refs/heads/main'}}]"
     needs: [variable_generation_completed, tf_lint, workspace_name, semver_tag]
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.6.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.23.0
     with:
       terraform_version: "1.6.4"
       terraform_directory: "./terraform/account"
