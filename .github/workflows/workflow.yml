@@ -24,18 +24,18 @@ jobs:
   # generate a branch name  
   branch_name:
     name: "Generate a safe branch name"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-branch-name.yml@main
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-branch-name.yml@v1.32.0
   
   # generate workspace name
   workspace_name:
     name: "Generate the workspace name"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-workspace.yml@main
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-workspace.yml@v1.32.0
   
   # generate semver tag
   semver_tag:
     needs: [branch_name]
     name: "Generate the semver tag value"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-semvar-tag.yml@main
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-semver-tag.yml@v1.32.0
     with:
       branch_name: ${{ needs.branch_name.outputs.parsed }}"
     secrets: inherit
@@ -61,7 +61,7 @@ jobs:
   # run linting for terraform
   tf_lint:
     name: "Run terraform linting"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-infrastructure-terraform.yml@v1.6.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-infrastructure-terraform.yml@v1.32.0
     with:
       directory: "./terraform"
       terraform_version: "1.6.4"
@@ -70,13 +70,13 @@ jobs:
   # tfsec for terraform 
   tfsec_analysis:
     name: "Run TFSec against the code base"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-infrastructure-tfsec-to-github-security.yml@v1.6.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-infrastructure-tfsec-to-github-security.yml@v1.32.0
 
   # terraform apply stage
   terraform_account:
     name: "Terraform Account [Apply: ${{ github.ref == 'refs/heads/main'}}]"
     needs: [variable_generation_completed, tf_lint, workspace_name, semver_tag]
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.6.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.32.0
     with:
       terraform_version: "1.6.4"
       terraform_directory: "./terraform/account"
