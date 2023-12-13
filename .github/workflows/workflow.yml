@@ -74,7 +74,6 @@ jobs:
 
   # terraform apply stage
   terraform_account:
-    if: github.ref != 'refs/heads/main'
     name: "Terraform Account [Apply: ${{ github.ref == 'refs/heads/main'}}]"
     needs: [variable_generation_completed, tf_lint, workspace_name, semver_tag]
     uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.6.0
