@@ -40,7 +40,7 @@ jobs:
       directory: "./terraform"
       terraform_version: "1.6.4"
       terraform_wrapper: false
-
+  
   # tfsec for terraform 
   tfsec_analysis:
     name: "Run TFSec against the code base"
@@ -72,13 +72,20 @@ jobs:
           echo "== semver =="
           echo "Tag: ${{ needs.semver_tag.outputs.tag }}"
 
+  tfversion:
+    needs: [semver_tag]
+    name: "Get terraform version"
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-terraform-version.yml@v1.34.0
+    with:
+      terraform_directory: "./terraform/account/"
+  
   # terraform apply stage
   terraform_account:
     name: "Terraform Account [Apply: ${{ github.ref == 'refs/heads/main'}}]"
-    needs: [variable_generation_completed, tf_lint, workspace_name, semver_tag]
+    needs: [variable_generation_completed, tf_lint, workspace_name, semver_tag, tfversion]
     uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.33.0
     with:
-      terraform_version: "1.6.4"
+      terraform_version: "${{ needs.tfversion.outputs.version}}"
       terraform_directory: "./terraform/account"
       terraform_apply: ${{ github.ref == 'refs/heads/main' && true || false }}
       terraform_workspace: "default" 
