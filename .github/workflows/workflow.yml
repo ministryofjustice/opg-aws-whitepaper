@@ -86,7 +86,7 @@ jobs:
   terraform_account:
     name: "Terraform Account [Apply: ${{ github.ref == 'refs/heads/main'}}]"
     needs: [variable_generation_completed, tf_lint, workspace_name, semver_tag, tf_version]
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.35.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.36.0-cleanupinfrasumm.0
     with:
       terraform_version: "${{ needs.tf_version.outputs.version}}"
       terraform_directory: "./terraform/account"
