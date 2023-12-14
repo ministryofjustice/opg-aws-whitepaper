@@ -43,7 +43,7 @@ jobs:
   
   tfversion_text:
     name: "look for version"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-terraform-version.yml@#v1.34.0-tfversion.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-terraform-version.yml@v1.34.0-tfversion.0
     with:
       terraform_directory: "./terraform/account/"
   
