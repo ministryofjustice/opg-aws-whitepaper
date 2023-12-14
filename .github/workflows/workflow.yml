@@ -40,7 +40,13 @@ jobs:
       directory: "./terraform"
       terraform_version: "1.6.4"
       terraform_wrapper: false
-
+  
+  tfversion_text:
+    name: "look for version"
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-terraform-version.yml@v1.34.0-tfversion.0
+    with:
+      terraform_directory: "./terraform/account/"
+  
   # tfsec for terraform 
   tfsec_analysis:
     name: "Run TFSec against the code base"
