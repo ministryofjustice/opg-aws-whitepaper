@@ -24,17 +24,17 @@ jobs:
   # generate a branch name  
   branch_name:
     name: "Generate a safe branch name"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-branch-name.yml@v1.36.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-branch-name.yml@v2.1.0
   
   # generate workspace name
   workspace_name:
     name: "Generate the workspace name"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-workspace.yml@v1.36.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-workspace.yml@v2.1.0
   
   tf_version:
     needs: [branch_name, workspace_name]
     name: "Get terraform version"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-terraform-version.yml@v1.36.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-terraform-version.yml@v2.1.0
     with:
       terraform_directory: "./terraform/account/"
 
@@ -43,7 +43,7 @@ jobs:
   tf_lint:
     needs: [tf_version]
     name: "Run terraform linting"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-infrastructure-terraform.yml@v1.36.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/linting-infrastructure-terraform.yml@v2.1.0
     with:
       directory: "./terraform"
       terraform_version: "${{ needs.tf_version.outputs.version}}"
@@ -53,13 +53,13 @@ jobs:
   tfsec_analysis:
     needs: [tf_lint]
     name: "Run TFSec against the code base"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-infrastructure-tfsec-to-github-security.yml@v1.36.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-infrastructure-tfsec-to-github-security.yml@v2.1.0
   
   # generate semver tag
   semver_tag:
     needs: [branch_name, tfsec_analysis, tf_lint]
     name: "Generate the semver tag value"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-semver-tag.yml@v1.36.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-semver-tag.yml@v2.1.0
     with:
       branch_name: ${{ needs.branch_name.outputs.parsed }}
     secrets: inherit
@@ -68,7 +68,7 @@ jobs:
   terraform_account:
     name: "Terraform Account [Apply: ${{ github.ref == 'refs/heads/main'}}]"
     needs: [tf_lint, workspace_name, semver_tag, tf_version]
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v1.36.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-infrastructure-terraform.yml@v2.1.0
     with:
       terraform_version: "${{ needs.tf_version.outputs.version}}"
       terraform_directory: "./terraform/account"
