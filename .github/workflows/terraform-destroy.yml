@@ -1,0 +1,40 @@
+name: "[Scheduled] Terraform Destroy"
+
+on:
+  schedule:
+    # 6pm every day except Sundays
+    - cron: '0 18 * * 0-6'
+
+jobs:
+  terraform_destroy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Get terraform version"
+        uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-terraform-version.yml@v1.36.0
+        id: tf_version
+        with:
+          terraform_directory: "./terraform/environment/"
+
+      - uses: hashicorp/setup-terraform@8fa54e78fa196965551aa8c4a4eae3aee5568620 # pin@v2.0.0
+        with:
+          terraform_version: ${{ steps.tf_version.outputs.version }}
+
+      - name: configure AWS credentials for terraform
+        uses: aws-actions/configure-aws-credentials@e6c766a518826746395987edb73a1a5767d0b602 # pin@v1.7.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_ACTIONS }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ACTIONS }}
+          aws-region: eu-west-1
+          role-duration-seconds: 1800
+          role-session-name: SandboxTerraformGithubAction
+      
+      - name: terraform init
+        working-directory: ./terraform/environment
+        run: terraform init --input=false
+
+      - name: terraform destroy
+        working-directory: ./terraform-environment
+        run: terraform destroy --auto-approve
+
