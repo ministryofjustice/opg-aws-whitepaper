@@ -1,6 +1,7 @@
 name: "[Scheduled] Terraform Destroy"
 
 on:
+  workflow_dispatch:
   schedule:
     # 6pm every day except Sundays
     - cron: '0 18 * * 0-6'
@@ -12,10 +13,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: "Get terraform version"
-        uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-terraform-version.yml@v1.36.0
+        uses: ministryofjustice/opg-github-actions/.github/actions/terraform-version@v2.7.3
         id: tf_version
         with:
-          terraform_directory: "./terraform/environment/"
+          terraform_directory: "./terraform/account/"
 
       - uses: hashicorp/setup-terraform@8fa54e78fa196965551aa8c4a4eae3aee5568620 # pin@v2.0.0
         with:
@@ -31,10 +32,10 @@ jobs:
           role-session-name: SandboxTerraformGithubAction
       
       - name: terraform init
-        working-directory: ./terraform/environment
-        run: terraform init --input=false
+        working-directory: ./terraform/account
+        run: terraform init --input=false --lock-timeout=5m
 
       - name: terraform destroy
-        working-directory: ./terraform-environment
+        working-directory: ./terraform-account
         run: terraform destroy --auto-approve
 
