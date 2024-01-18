@@ -18,7 +18,7 @@ jobs:
         with:
           terraform_directory: "./terraform/account/"
 
-      - uses: hashicorp/setup-terraform@8fa54e78fa196965551aa8c4a4eae3aee5568620 # pin@v2.0.0
+      - uses: hashicorp/setup-terraform@6ac2b085ea0e6db0783c745d23963c259e0b66ee # pin@v2.0.0
         with:
           terraform_version: ${{ steps.tf_version.outputs.version }}
 
