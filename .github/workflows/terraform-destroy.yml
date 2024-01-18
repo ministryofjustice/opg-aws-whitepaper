@@ -36,6 +36,6 @@ jobs:
         run: terraform init --input=false --lock-timeout=5m
 
       - name: terraform destroy
-        working-directory: ./terraform-account
+        working-directory: ./terraform/account
         run: terraform destroy --auto-approve
 
