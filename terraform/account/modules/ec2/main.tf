@@ -1,5 +1,5 @@
 resource "aws_instance" "example" {
-  ami           = "ami-0500f74cc2b89fb6b"
+  ami           = "ami-0c45689cf7ad8a412"
   instance_type = "t2.micro"
 
   root_block_device {
