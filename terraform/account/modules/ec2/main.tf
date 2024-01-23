@@ -1,6 +1,6 @@
 resource "aws_instance" "example" {
-  ami           = "ami-0c45689cf7ad8a412"
-  instance_type = "t2.micro"
+  ami                    = "ami-0c45689cf7ad8a412"
+  instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.example_sg.id]
 
   root_block_device {
