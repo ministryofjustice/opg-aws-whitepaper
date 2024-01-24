@@ -1,5 +1,5 @@
 resource "aws_instance" "example" {
-  ami                    = "ami-0c45689cf7ad8a412"
+  ami                    = "ami-0905a3c97561e0b69"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.example_sg.id]
 
@@ -18,11 +18,9 @@ resource "aws_instance" "example" {
 
   user_data_replace_on_change = true
 
-
   tags = {
     Name = "temp-webserver"
   }
-
 
   provider = aws
 }
