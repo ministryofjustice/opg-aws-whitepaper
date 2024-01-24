@@ -1,7 +1,8 @@
 resource "aws_secretsmanager_secret" "test_key" {
-  name       = "aws-whitepaper-example-key"
-  kms_key_id = aws_kms_key.secrets_manager.key_id
-  provider   = aws.sandbox
+  name                    = "aws-whitepaper-example-key"
+  kms_key_id              = aws_kms_key.secrets_manager.key_id
+  recovery_window_in_days = 0
+  provider                = aws.sandbox
 }
 
 resource "aws_kms_key" "secrets_manager" {
