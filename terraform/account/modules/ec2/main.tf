@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "sandbox" {
   image_id        = "ami-0905a3c97561e0b69"
   instance_type   = "t2.micro"
-  security_groups = [aws_security_group.sandbox_sg]
+  security_groups = [aws_security_group.sandbox_sg.ids]
   root_block_device {
     encrypted = true
   }
