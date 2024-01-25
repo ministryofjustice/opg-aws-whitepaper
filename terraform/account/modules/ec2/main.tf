@@ -26,6 +26,9 @@ resource "aws_autoscaling_group" "sanbox" {
   launch_configuration = aws_launch_configuration.sandbox.name
   vpc_zone_identifier  = data.aws_subnets.default.ids
 
+  target_group_arns = [aws_lb_target_group.asg.arn]
+  health_check_type = "ELB"
+
   min_size = 2
   max_size = 5
 
@@ -58,6 +61,23 @@ resource "aws_lb_listener" "http" {
       status_code  = 404
     }
   }
+}
+
+resource "aws_lb_listener_rule" "asg" {
+  listener_arn = aws_lb_listener.http.arn
+  priority     = 100
+
+  condition {
+    path_pattern {
+      values = ["*"]
+    }
+  }
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.asg.arn
+  }
+
 }
 
 resource "aws_lb_target_group" "asg" {
