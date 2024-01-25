@@ -40,6 +40,7 @@ resource "aws_lb" "sandbox" {
   name               = "sandbox-asg-lb"
   load_balancer_type = "application"
   subnets            = data.aws_subnets.default.ids
+  security_groups    = [aws_security_group.sandbox_alb.id]
 }
 
 
