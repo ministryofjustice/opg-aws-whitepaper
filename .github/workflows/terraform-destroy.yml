@@ -3,8 +3,8 @@ name: "[Scheduled] Terraform Destroy"
 on:
   workflow_dispatch:
   schedule:
-    # 6pm every day except Sundays
-    - cron: '0 18 * * 0-6'
+    # 6pm every day
+    - cron: '0 18 * * *'
 
 jobs:
   terraform_destroy:
@@ -30,7 +30,7 @@ jobs:
           aws-region: eu-west-1
           role-duration-seconds: 1800
           role-session-name: SandboxTerraformGithubAction
-      
+
       - name: terraform init
         working-directory: ./terraform/account
         run: terraform init --input=false --lock-timeout=5m
@@ -38,4 +38,3 @@ jobs:
       - name: terraform destroy
         working-directory: ./terraform/account
         run: terraform destroy --auto-approve
-
