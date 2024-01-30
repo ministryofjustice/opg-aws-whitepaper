@@ -11,7 +11,7 @@ resource "aws_launch_configuration" "sandbox" {
 
   user_data = <<-EOF
     #!/bin/bash
-    echo "Hello, World!" > index.html
+    echo "${var.cluster_name}" > index.html
     nohup busybox httpd -f -p ${var.server_port} &
     EOF
 
@@ -22,7 +22,7 @@ resource "aws_launch_configuration" "sandbox" {
   provider = aws
 }
 
-resource "aws_autoscaling_group" "sanbox" {
+resource "aws_autoscaling_group" "sandbox" {
   launch_configuration = aws_launch_configuration.sandbox.name
   vpc_zone_identifier  = data.aws_subnets.default.ids
 
@@ -34,16 +34,17 @@ resource "aws_autoscaling_group" "sanbox" {
 
   tag {
     key                 = "Name"
-    value               = "sandbox-asg"
+    value               = "${var.cluster_name}-asg"
     propagate_at_launch = true
   }
 }
 
 resource "aws_lb" "sandbox" {
-  name               = "sandbox-asg-lb"
-  load_balancer_type = "application"
-  subnets            = data.aws_subnets.default.ids
-  security_groups    = [aws_security_group.sandbox_alb.id]
+  name                       = "sandbox-asg-lb"
+  load_balancer_type         = "application"
+  subnets                    = data.aws_subnets.default.ids
+  security_groups            = [aws_security_group.sandbox_alb.id]
+  drop_invalid_header_fields = true
 }
 
 resource "aws_lb_listener" "http" {
@@ -98,8 +99,8 @@ resource "aws_lb_target_group" "asg" {
 }
 
 resource "aws_security_group" "sandbox_sg" {
-  name = "sandbox-sg"
-
+  name        = "${var.cluster_name}-sg"
+  description = "Allow access from internet"
   ingress {
     from_port   = var.server_port
     to_port     = var.server_port
@@ -110,8 +111,8 @@ resource "aws_security_group" "sandbox_sg" {
 }
 
 resource "aws_security_group" "sandbox_alb" {
-  name = "sandbox-alb"
-
+  name        = "${var.cluster_name}-alb"
+  description = "Allow access from internet"
   ingress {
     from_port   = 80
     to_port     = 80
@@ -120,10 +121,10 @@ resource "aws_security_group" "sandbox_alb" {
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
+    from_port   = var.server_port
+    to_port     = var.server_port
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [data.aws_vpc.default.cidr_block]
   }
 }
 
