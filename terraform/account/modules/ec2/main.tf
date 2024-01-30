@@ -98,8 +98,8 @@ resource "aws_lb_target_group" "asg" {
 }
 
 resource "aws_security_group" "sandbox_sg" {
-  name = "${var.cluster_name}-sg"
-
+  name        = "${var.cluster_name}-sg"
+  description = "Allow access from internet"
   ingress {
     from_port   = var.server_port
     to_port     = var.server_port
@@ -110,8 +110,8 @@ resource "aws_security_group" "sandbox_sg" {
 }
 
 resource "aws_security_group" "sandbox_alb" {
-  name = "${var.cluster_name}-alb"
-
+  name        = "${var.cluster_name}-alb"
+  description = "Allow access from internet"
   ingress {
     from_port   = 80
     to_port     = 80
