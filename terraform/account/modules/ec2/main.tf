@@ -30,7 +30,7 @@ resource "aws_autoscaling_group" "sandbox" {
   health_check_type = "ELB"
 
   min_size = 1
-  max_size = 2
+  max_size = 5
 
   tag {
     key                 = "Name"
