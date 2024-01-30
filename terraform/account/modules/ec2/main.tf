@@ -40,7 +40,7 @@ resource "aws_autoscaling_group" "sandbox" {
 }
 
 resource "aws_lb" "sandbox" {
-  name                       = "sandbox-asg-lb"
+  name                       = "${var.cluster_name}-lb"
   load_balancer_type         = "application"
   subnets                    = data.aws_subnets.default.ids
   security_groups            = [aws_security_group.sandbox_alb.id]
@@ -82,7 +82,7 @@ resource "aws_lb_listener_rule" "asg" {
 }
 
 resource "aws_lb_target_group" "asg" {
-  name     = "sandbox-asg"
+  name     = "${var.cluster_name}-asg"
   port     = var.server_port
   protocol = "HTTP"
   vpc_id   = data.aws_vpc.default.id
