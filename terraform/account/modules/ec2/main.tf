@@ -11,7 +11,7 @@ resource "aws_launch_configuration" "sandbox" {
 
   user_data = <<-EOF
     #!/bin/bash
-    echo "Hello, World!" > index.html
+    echo "${var.cluster_name}" > index.html
     nohup busybox httpd -f -p ${var.server_port} &
     EOF
 
@@ -34,7 +34,7 @@ resource "aws_autoscaling_group" "sanbox" {
 
   tag {
     key                 = "Name"
-    value               = "sandbox-asg"
+    value               = "${var.cluster_name}-asg"
     propagate_at_launch = true
   }
 }
@@ -98,8 +98,8 @@ resource "aws_lb_target_group" "asg" {
 }
 
 resource "aws_security_group" "sandbox_sg" {
-  name = "sandbox-sg"
-
+  name        = "${var.cluster_name}-sg"
+  description = "Allow access from internet"
   ingress {
     from_port   = var.server_port
     to_port     = var.server_port
@@ -110,8 +110,8 @@ resource "aws_security_group" "sandbox_sg" {
 }
 
 resource "aws_security_group" "sandbox_alb" {
-  name = "sandbox-alb"
-
+  name        = "${var.cluster_name}-alb"
+  description = "Allow access from internet"
   ingress {
     from_port   = 80
     to_port     = 80
