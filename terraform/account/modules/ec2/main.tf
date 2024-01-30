@@ -40,7 +40,7 @@ resource "aws_autoscaling_group" "sandbox" {
 }
 
 resource "aws_lb" "sandbox" {
-  name                       = "sandbox-asg-lb"
+  name                       = "${var.cluster_name}-lb"
   load_balancer_type         = "application"
   subnets                    = data.aws_subnets.default.ids
   security_groups            = [aws_security_group.sandbox_alb.id]
