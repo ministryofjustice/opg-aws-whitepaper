@@ -1,4 +1,4 @@
-module "ec2" {
+module "staging" {
   source       = "./modules/ec2"
   cluster_name = "sandbox-staging"
   providers = {
@@ -6,7 +6,7 @@ module "ec2" {
   }
 }
 
-module "ec2" {
+module "prp" {
   source       = "./modules/ec2"
   cluster_name = "sandbox-prp"
   providers = {
