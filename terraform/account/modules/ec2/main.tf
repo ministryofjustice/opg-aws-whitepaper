@@ -101,31 +101,29 @@ resource "aws_lb_target_group" "asg" {
 resource "aws_security_group" "sandbox_sg" {
   name        = "${var.cluster_name}-sg"
   description = "Allow access from internet"
-  ingress {
-    from_port   = var.server_port
-    to_port     = var.server_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
 }
 
 resource "aws_security_group" "sandbox_alb" {
   name        = "${var.cluster_name}-alb"
   description = "Allow access from internet"
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+}
 
-  egress {
-    from_port   = var.server_port
-    to_port     = var.server_port
-    protocol    = "tcp"
-    cidr_blocks = [data.aws_vpc.default.cidr_block]
-  }
+resource "aws_security_group_rule" "allow_http_inbound" {
+  type              = "ingress"
+  security_group_id = aws_security_group.sandbox_alb.id
+  from_port         = 0
+  to_port           = 0
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "allow_ec2_outbound" {
+  type              = "egress"
+  security_group_id = aws_security_group.sandbox_sg.id
+  from_port         = var.server_port
+  to_port           = var.server_port
+  protocol          = "tcp"
+  cidr_blocks       = [data.aws_vpc.default.cidr_block]
 }
 
 data "aws_vpc" "default" {
