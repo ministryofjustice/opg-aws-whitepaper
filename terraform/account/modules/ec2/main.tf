@@ -124,7 +124,7 @@ resource "aws_security_group" "sandbox_alb" {
     from_port   = var.server_port
     to_port     = var.server_port
     protocol    = "-1"
-    cidr_blocks = [data.aws_vpc.main.cidr_block]
+    cidr_blocks = [data.aws_vpc.default.cidr_block]
   }
 }
 
