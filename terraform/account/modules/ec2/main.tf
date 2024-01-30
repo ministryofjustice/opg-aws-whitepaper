@@ -22,7 +22,7 @@ resource "aws_launch_configuration" "sandbox" {
   provider = aws
 }
 
-resource "aws_autoscaling_group" "sanbox" {
+resource "aws_autoscaling_group" "sandbox" {
   launch_configuration = aws_launch_configuration.sandbox.name
   vpc_zone_identifier  = data.aws_subnets.default.ids
 
@@ -40,10 +40,11 @@ resource "aws_autoscaling_group" "sanbox" {
 }
 
 resource "aws_lb" "sandbox" {
-  name               = "sandbox-asg-lb"
-  load_balancer_type = "application"
-  subnets            = data.aws_subnets.default.ids
-  security_groups    = [aws_security_group.sandbox_alb.id]
+  name                       = "sandbox-asg-lb"
+  load_balancer_type         = "application"
+  subnets                    = data.aws_subnets.default.ids
+  security_groups            = [aws_security_group.sandbox_alb.id]
+  drop_invalid_header_fields = true
 }
 
 resource "aws_lb_listener" "http" {
