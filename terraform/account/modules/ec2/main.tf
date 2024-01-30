@@ -123,7 +123,7 @@ resource "aws_security_group" "sandbox_alb" {
   egress {
     from_port   = var.server_port
     to_port     = var.server_port
-    protocol    = "-1"
+    protocol    = "tcp"
     cidr_blocks = [data.aws_vpc.default.cidr_block]
   }
 }
