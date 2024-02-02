@@ -62,7 +62,7 @@ resource "aws_security_group" "sandbox_lb_sg" {
   description = "Allow access from the internet"
 }
 
-resource "aws_security_group_rule" "sandbox_lb_sg_rule" {
+resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
   type              = "ingress"
   security_group_id = aws_security_group.sandbox_lb_sg.id
   from_port         = local.http
@@ -71,12 +71,11 @@ resource "aws_security_group_rule" "sandbox_lb_sg_rule" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-# Create up to 3 availability zones, depending on input
-/*
-resource "aws_subnet" "public_subnet" {
-  for_each          = var.availability_zones
-  vpc_id            = var.vpc_id
-  cidr_block        = "10.0.${count.index + 1}.0/24"
-  availability_zone = element(data.aws_availability_zones.default.names, count.index)
+resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
+  type              = "egress"
+  security_group_id = aws_security_group.sandbox_lb_sg.id
+  from_port         = var.server_port
+  to_port           = var.server_port
+  protocol          = "tcp"
+  cidr_blocks       = [data.aws_vpc.default.id]
 }
-*/
