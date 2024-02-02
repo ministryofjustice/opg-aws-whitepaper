@@ -1,14 +1,8 @@
-module "staging" {
-  source       = "./modules/ec2"
-  cluster_name = "sandbox-staging"
-  providers = {
-    aws = aws.sandbox
-  }
-}
-
-module "prp" {
-  source       = "./modules/ec2"
-  cluster_name = "sandbox-prp"
+module "loadbalancer" {
+  source             = "./modules/alb"
+  vpc_id             = data.aws_vpc_default.id
+  subnet_ids         = data.aws_subnets.default.ids
+  availability_zones = data.aws_availability_zones.default.names
   providers = {
     aws = aws.sandbox
   }
