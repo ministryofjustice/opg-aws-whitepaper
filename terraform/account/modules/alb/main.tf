@@ -2,7 +2,7 @@ resource "aws_lb" "sandbox_lb" {
   name                       = "${var.web_cluster_name}-lb"
   load_balancer_type         = "application"
   subnets                    = data.aws_subnets.default.ids
-  security_groups            = [aws_security_group.sandbox_alb_sg.id]
+  security_groups            = [aws_security_group.sandbox_lb_sg.id]
   drop_invalid_header_fields = true
 }
 
@@ -43,8 +43,7 @@ resource "aws_lb_target_group" "sandbox_asg" {
   name     = "${var.web_cluster_name}-asg"
   port     = var.server_port
   protocol = "HTTP"
-  vpc_id   = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
-
+  vpc_id   = local.vpc_id
   health_check {
     path                = "/"
     protocol            = "HTTP"
@@ -69,3 +68,13 @@ resource "aws_security_group_rule" "sandbox_lb_sg_rule" {
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
 }
+
+# Create up to 3 availability zones, depending on input
+/*
+resource "aws_subnet" "public_subnet" {
+  count             = var.subnet_count
+  vpc_id            = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
+  cidr_block        = "10.0.${count.index + 1}.0/24"
+  availability_zone = element(data.aws_availability_zones.default.names, count.index)
+}
+*/
