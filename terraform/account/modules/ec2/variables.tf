@@ -4,9 +4,9 @@ variable "server_port" {
   default     = 8080
 }
 
-variable "target_group_arn" {
+variable "target_group_arns" {
   description = "The target group ARNs from the ALB module"
-  type        = string
+  type        = set(string)
 }
 
 variable "alb_security_group" {
