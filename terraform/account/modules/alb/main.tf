@@ -11,6 +11,7 @@ resource "aws_lb_listener" "http" {
   port              = local.http
   protocol          = "HTTP"
 
+
   # By default, return a 404 page
   default_action {
     type = "fixed-response"
@@ -25,6 +26,7 @@ resource "aws_lb_listener" "http" {
 
 resource "aws_lb_listener_rule" "sandbox_asg" {
   listener_arn = aws_lb_listener.http.arn
+
   priority     = 100
 
   condition {
