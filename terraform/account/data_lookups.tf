@@ -1,5 +1,6 @@
 data "aws_vpc" "default" {
-  default = true
+  default  = true
+  provider = aws.sandbox
 }
 
 data "aws_subnets" "default" {
@@ -7,8 +8,10 @@ data "aws_subnets" "default" {
     name   = "vpc-id"
     values = [data.aws_vpc.default.id]
   }
+  provider = aws.sandbox
 }
 
 data "aws_availability_zones" "default" {
-  state = "available"
+  state    = "available"
+  provider = aws.sandbox
 }
