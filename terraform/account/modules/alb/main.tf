@@ -45,6 +45,7 @@ resource "aws_lb_target_group" "sandbox_asg" {
   port     = var.server_port
   protocol = "HTTP"
   vpc_id   = var.vpc_id
+
   health_check {
     path                = "/"
     protocol            = "HTTP"
@@ -64,8 +65,8 @@ resource "aws_security_group" "sandbox_lb_sg" {
 resource "aws_security_group_rule" "sandbox_lb_sg_rule" {
   type              = "ingress"
   security_group_id = aws_security_group.sandbox_lb_sg.id
-  from_port         = 0
-  to_port           = 0
+  from_port         = local.http
+  to_port           = local.http
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
 }
