@@ -6,10 +6,10 @@ resource "aws_lb" "sandbox_lb" {
   drop_invalid_header_fields = true
 }
 
-resource "aws_lb_listener" "http" {
+resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.sandbox_lb.arn
-  port              = local.http
-  protocol          = "HTTP"
+  port              = local.https
+  protocol          = "HTTPS"
 
   # By default, return a 404 page
   default_action {
@@ -24,7 +24,7 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_lb_listener_rule" "sandbox_asg" {
-  listener_arn = aws_lb_listener.http.arn
+  listener_arn = aws_lb_listener.https.arn
   priority     = 100
 
   condition {
