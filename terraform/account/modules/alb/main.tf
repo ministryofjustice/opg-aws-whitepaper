@@ -26,7 +26,6 @@ resource "aws_lb_listener" "http" {
 
 resource "aws_lb_listener_rule" "sandbox_asg" {
   listener_arn = aws_lb_listener.http.arn
-
   priority     = 100
 
   condition {
