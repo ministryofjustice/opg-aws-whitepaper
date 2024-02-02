@@ -1,5 +1,5 @@
 output "target_group_arns" {
-  value = toset(aws_lb_target_group.sandbox_asg.arn)
+  value = aws_lb_target_group.sandbox_asg.arn
 }
 
 output "alb_security_group_id" {
