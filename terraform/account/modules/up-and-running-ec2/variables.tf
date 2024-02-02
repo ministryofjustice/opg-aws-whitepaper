@@ -8,3 +8,9 @@ variable "cluster_name" {
   description = "The name for the cluster resources"
   type        = string
 }
+
+variable "custom_tags" {
+  description = "Custom tags for the ASG"
+  type        = map(string)
+  default     = {}
+}
