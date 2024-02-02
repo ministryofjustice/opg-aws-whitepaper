@@ -19,7 +19,16 @@ variable "custom_tags" {
 variable "vpc_id" {
   description = "The VPC for the loadbalancer to use"
   type        = string
-  default     = ""
+}
+
+variable "subnet_ids" {
+  description = "The subnets to create the ALB in"
+  type        = list(string)
+}
+
+variable "availability_zones" {
+  description = "The availability zones to create the ALB in"
+  type        = list(string)
 }
 
 /*
