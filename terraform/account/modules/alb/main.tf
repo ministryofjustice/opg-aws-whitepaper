@@ -43,7 +43,7 @@ resource "aws_lb_target_group" "sandbox_asg" {
   name     = "${var.web_cluster_name}-asg"
   port     = var.server_port
   protocol = "HTTP"
-  vpc_id   = local.vpc_id
+  vpc_id   = var.vpc_id
   health_check {
     path                = "/"
     protocol            = "HTTP"
