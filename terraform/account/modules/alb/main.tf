@@ -72,10 +72,11 @@ resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
 }
 
 resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
-  type              = "egress"
-  security_group_id = aws_security_group.sandbox_lb_sg.id
-  from_port         = var.server_port
-  to_port           = var.server_port
-  protocol          = "tcp"
-  cidr_blocks       = [data.aws_vpc.default.id]
+  type                     = "egress"
+  security_group_id        = aws_security_group.sandbox_lb_sg.id
+  from_port                = var.server_port
+  to_port                  = var.server_port
+  protocol                 = "tcp"
+  source_security_group_id = var.ec2_security_group
+
 }
