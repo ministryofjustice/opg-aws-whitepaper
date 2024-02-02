@@ -19,4 +19,17 @@ variable "custom_tags" {
 variable "vpc_id" {
   description = "The VPC for the loadbalancer to use"
   type        = string
+  default     = ""
 }
+
+/*
+variable "subnet_count" {
+  description = "How many subnets to use"
+  type        = number
+
+  validation {
+    condition     = var.subnet_count > 0 && var.subnet_count <= 3
+    error_message = "The subnet count must be between 1 and 3."
+  }
+}
+*/
