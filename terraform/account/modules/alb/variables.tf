@@ -23,12 +23,12 @@ variable "vpc_id" {
 
 variable "subnet_ids" {
   description = "The subnets to create the ALB in"
-  type        = list(string)
+  type        = set(string)
 }
 
 variable "availability_zones" {
   description = "The availability zones to create the ALB in"
-  type        = list(string)
+  type        = set(string)
 }
 
 /*
