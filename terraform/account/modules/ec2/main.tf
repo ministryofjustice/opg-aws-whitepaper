@@ -4,6 +4,7 @@ resource "aws_launch_configuration" "sandbox" {
   security_groups             = [aws_security_group.inbound.id]
   name_prefix                 = var.web_cluster_name
   associate_public_ip_address = false
+
   root_block_device {
     encrypted = true
   }
@@ -17,6 +18,7 @@ resource "aws_launch_configuration" "sandbox" {
   }
 
   user_data = local.web_data_script
+
 }
 
 resource "aws_autoscaling_group" "sandbox" {
@@ -42,6 +44,7 @@ resource "aws_security_group_rule" "public-inbound" {
   to_port                  = var.server_port
   protocol                 = "tcp"
   source_security_group_id = var.alb_security_group
+
 }
 
 resource "aws_security_group" "private-inbound" {
