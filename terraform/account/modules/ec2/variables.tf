@@ -18,3 +18,8 @@ variable "default_aws_subnets" {
   description = "The default subnets in AWS"
   type        = set(string)
 }
+
+variable "web_cluster_name" {
+  description = "The name for the cluster of resources"
+  type        = string
+}
