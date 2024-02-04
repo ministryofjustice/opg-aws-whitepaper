@@ -1,8 +1,10 @@
 resource "aws_launch_configuration" "sandbox" {
-  image_id        = "ami-0905a3c97561e0b69"
-  instance_type   = "t2.micro"
-  security_groups = [aws_security_group.inbound.id]
-  name            = var.web_cluster_name
+  image_id                    = "ami-0905a3c97561e0b69"
+  instance_type               = "t2.micro"
+  security_groups             = [aws_security_group.inbound.id]
+  name_prefix                 = var.web_cluster_name
+  associate_public_ip_address = false
+
   root_block_device {
     encrypted = true
   }
@@ -15,11 +17,8 @@ resource "aws_launch_configuration" "sandbox" {
     create_before_destroy = true
   }
 
-  user_data = <<-EOF
-    #!/bin/bash
-    echo "Hello, world from $(hostname -f)" > index.html
-    nohup busybox httpd -f -p ${var.server_port} &
-    EOF
+  user_data = local.web_data_script
+
 }
 
 resource "aws_autoscaling_group" "sandbox" {
@@ -33,14 +32,29 @@ resource "aws_autoscaling_group" "sandbox" {
   max_size = 4
 }
 
-resource "aws_security_group" "inbound" {
-  name        = "sandbox-sg"
-  description = "Allow inbound HTTP traffic"
+resource "aws_security_group" "public-inbound" {
+  name        = "public-sandbox-sg"
+  description = "Allow public inbound HTTP traffic"
 }
 
-resource "aws_security_group_rule" "inbound" {
+resource "aws_security_group_rule" "public-inbound" {
   type                     = "ingress"
-  security_group_id        = aws_security_group.inbound.id
+  security_group_id        = aws_security_group.public-inbound.id
+  from_port                = var.server_port
+  to_port                  = var.server_port
+  protocol                 = "tcp"
+  source_security_group_id = var.alb_security_group
+
+}
+
+resource "aws_security_group" "private-inbound" {
+  name        = "private-sandbox-sg"
+  description = "Allow internal inbound HTTP traffic"
+}
+
+resource "aws_security_group_rule" "private-inbound" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.private-inbound.iid
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
