@@ -2,7 +2,7 @@ resource "aws_launch_configuration" "sandbox" {
   image_id        = "ami-0905a3c97561e0b69"
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.inbound.id]
-
+  name            = var.web_cluster_name
   root_block_device {
     encrypted = true
   }
@@ -17,7 +17,7 @@ resource "aws_launch_configuration" "sandbox" {
 
   user_data = <<-EOF
     #!/bin/bash
-    echo "Hello, world!" > index.html
+    echo "Hello, world from $(hostname -f)" > index.html
     nohup busybox httpd -f -p ${var.server_port} &
     EOF
 }
@@ -29,8 +29,8 @@ resource "aws_autoscaling_group" "sandbox" {
   target_group_arns = var.target_group_arns
   health_check_type = "ELB"
 
-  min_size = 1
-  max_size = 3
+  min_size = 2
+  max_size = 4
 }
 
 resource "aws_security_group" "inbound" {
@@ -41,8 +41,8 @@ resource "aws_security_group" "inbound" {
 resource "aws_security_group_rule" "inbound" {
   type                     = "ingress"
   security_group_id        = aws_security_group.inbound.id
-  from_port                = 8080
-  to_port                  = 8080
+  from_port                = var.server_port
+  to_port                  = var.server_port
   protocol                 = "tcp"
   source_security_group_id = var.alb_security_group
 }
