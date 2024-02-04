@@ -1,7 +1,7 @@
-variable "web_cluster_name" {
+variable "cluster_name" {
   description = "The name of the cluster"
   type        = string
-  default     = "web-cluster"
+  default     = "sandbox-cluster"
 }
 
 variable "server_port" {
@@ -24,6 +24,7 @@ variable "vpc_id" {
 variable "subnet_ids" {
   description = "The subnets to create the ALB in"
   type        = set(string)
+  default     = ([])
 }
 
 variable "availability_zones" {
@@ -31,9 +32,15 @@ variable "availability_zones" {
   type        = set(string)
 }
 
-variable "ec2_security_group" {
+variable "security_group" {
   description = "The EC2 security group for outbound traffic"
   type        = string
+}
+
+variable "private" {
+  description = "The bool to check if the loadbalancer is private"
+  type        = bool
+  default     = false
 }
 
 /*

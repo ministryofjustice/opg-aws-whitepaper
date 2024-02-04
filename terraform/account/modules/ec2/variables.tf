@@ -23,3 +23,8 @@ variable "web_cluster_name" {
   description = "The name for the cluster of resources"
   type        = string
 }
+
+variable "web_server" {
+  description = "Whether the EC2 instance is publicly accessible"
+  type        = bool
+}
