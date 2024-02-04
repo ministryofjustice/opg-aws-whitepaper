@@ -5,7 +5,7 @@ module "public-loadbalancer" {
   subnet_ids         = data.aws_subnets.default.ids
   availability_zones = data.aws_availability_zones.default.names
   server_port        = local.server_port
-  security_group     = module.ec2.security_group_id
+  security_group     = module.ec2-web.security_group_id
   cluster_name       = "public-${local.web_cluster_name}"
   providers = {
     aws = aws.sandbox
