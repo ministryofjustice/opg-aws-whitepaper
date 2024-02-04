@@ -31,6 +31,11 @@ variable "availability_zones" {
   type        = set(string)
 }
 
+variable "ec2_security_group" {
+  description = "The EC2 security group for outbound traffic"
+  type        = string
+}
+
 /*
 variable "subnet_count" {
   description = "How many subnets to use"

@@ -15,4 +15,6 @@ locals {
   }
 
   default_tags = merge(local.mandatory_moj_tags, local.optional_tags)
+
+  server_port = 8080
 }
