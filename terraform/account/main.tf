@@ -7,6 +7,7 @@ module "public-loadbalancer" {
   server_port        = local.server_port
   security_group     = module.ec2.security_group_id
   cluster_name       = "public-${local.web_cluster_name}"
+
   providers = {
     aws = aws.sandbox
   }
