@@ -17,7 +17,7 @@ resource "aws_launch_configuration" "sandbox" {
 
   user_data = <<-EOF
     #!/bin/bash
-    echo "Hello, world!" > index.html
+    echo "Hello, world from $(hostname -f)" > index.html
     nohup busybox httpd -f -p ${var.server_port} &
     EOF
 }
