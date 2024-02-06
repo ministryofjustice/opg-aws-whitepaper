@@ -85,9 +85,9 @@ resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
 resource "aws_subnet" "private-subnet" {
   for_each = local.subnets
 
-  vpc_id               = var.vpc_id
-  cidr_block           = each.value.cidr_block
-  availability_zone_id = var.availability_zones[each.value.az_index].id
+  vpc_id            = var.vpc_id
+  cidr_block        = each.value.cidr_block
+  availability_zone = "eu-west-1${each.key}"
 
   tags = {
     Name = "private-subnet-${each.key}"

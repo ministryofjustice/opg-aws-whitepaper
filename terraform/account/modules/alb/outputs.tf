@@ -7,6 +7,6 @@ output "alb_security_group_id" {
 }
 
 output "subnet_ids" {
-  value       = [for subnet in aws_subnet.private_subnet : subnet.id]
+  value       = [for subnet in aws_subnet.private-subnet : subnet.id]
   description = "The IDs of the subnets created for the ALB"
 }

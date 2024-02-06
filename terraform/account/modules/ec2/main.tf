@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "sandbox" {
   image_id                    = "ami-0905a3c97561e0b69"
   instance_type               = "t2.micro"
-  security_groups             = [aws_security_group.inbound.id]
+  security_groups             = var.web_server ? [aws_security_group.public-inbound.id] : [aws_security_group.private-inbound.id]
   name_prefix                 = var.web_cluster_name
   associate_public_ip_address = false
 
@@ -54,7 +54,7 @@ resource "aws_security_group" "private-inbound" {
 
 resource "aws_security_group_rule" "private-inbound" {
   type                     = "ingress"
-  security_group_id        = aws_security_group.private-inbound.iid
+  security_group_id        = aws_security_group.private-inbound.id
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
