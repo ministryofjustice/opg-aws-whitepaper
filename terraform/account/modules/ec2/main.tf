@@ -1,8 +1,10 @@
 resource "aws_launch_configuration" "sandbox" {
-  image_id        = "ami-0905a3c97561e0b69"
-  instance_type   = "t2.micro"
-  security_groups = [aws_security_group.inbound.id]
-  name            = var.web_cluster_name
+  image_id                    = "ami-0905a3c97561e0b69"
+  instance_type               = "t2.micro"
+  security_groups             = var.web_server ? [aws_security_group.public-inbound.id] : [aws_security_group.private-inbound.id]
+  name_prefix                 = var.web_cluster_name
+  associate_public_ip_address = false
+
   root_block_device {
     encrypted = true
   }
@@ -15,11 +17,8 @@ resource "aws_launch_configuration" "sandbox" {
     create_before_destroy = true
   }
 
-  user_data = <<-EOF
-    #!/bin/bash
-    echo "Hello, world from $(hostname -f)" > index.html
-    nohup busybox httpd -f -p ${var.server_port} &
-    EOF
+  user_data = var.web_server ? local.web_data_script : local.app_data_script
+
 }
 
 resource "aws_autoscaling_group" "sandbox" {
@@ -33,16 +32,47 @@ resource "aws_autoscaling_group" "sandbox" {
   max_size = 4
 }
 
-resource "aws_security_group" "inbound" {
-  name        = "sandbox-sg"
-  description = "Allow inbound HTTP traffic"
+resource "aws_security_group" "public-inbound" {
+  name        = "public-sandbox-inbound-sg"
+  description = "Allow public inbound HTTP traffic"
 }
 
-resource "aws_security_group_rule" "inbound" {
+resource "aws_security_group_rule" "public-inbound" {
+  description              = "Allow ingress from public ALB"
   type                     = "ingress"
-  security_group_id        = aws_security_group.inbound.id
+  security_group_id        = aws_security_group.public-inbound.id
   from_port                = var.server_port
   to_port                  = var.server_port
+  protocol                 = "tcp"
+  source_security_group_id = var.alb_security_group
+}
+
+resource "aws_security_group" "private-inbound" {
+  name        = "private-sandbox-inbound-sg"
+  description = "Allow internal inbound HTTP traffic"
+}
+
+resource "aws_security_group_rule" "private-inbound" {
+  description              = "Allow ingress from private ALB"
+  type                     = "ingress"
+  security_group_id        = aws_security_group.private-inbound.id
+  from_port                = var.server_port
+  to_port                  = var.server_port
+  protocol                 = "tcp"
+  source_security_group_id = var.alb_security_group
+}
+
+resource "aws_security_group" "private-outbound" {
+  description = "Allow egress to the private ALB"
+  name        = "private-sandbox-outbound-sg"
+}
+
+resource "aws_security_group_rule" "private-outbound" {
+  description              = "Allow ingress to private ALB"
+  type                     = "egress"
+  security_group_id        = aws_security_group.private-outbound.id
+  from_port                = var.app_server_port
+  to_port                  = var.app_server_port
   protocol                 = "tcp"
   source_security_group_id = var.alb_security_group
 }
