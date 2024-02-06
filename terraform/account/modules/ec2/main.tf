@@ -38,13 +38,13 @@ resource "aws_security_group" "public-inbound" {
 }
 
 resource "aws_security_group_rule" "public-inbound" {
+  description              = "Allow ingress from public ALB"
   type                     = "ingress"
   security_group_id        = aws_security_group.public-inbound.id
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
   source_security_group_id = var.alb_security_group
-
 }
 
 resource "aws_security_group" "private-inbound" {
@@ -53,6 +53,7 @@ resource "aws_security_group" "private-inbound" {
 }
 
 resource "aws_security_group_rule" "private-inbound" {
+  description              = "Allow ingress from private ALB"
   type                     = "ingress"
   security_group_id        = aws_security_group.private-inbound.id
   from_port                = var.server_port

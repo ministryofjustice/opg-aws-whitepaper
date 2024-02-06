@@ -63,6 +63,7 @@ resource "aws_security_group" "sandbox_lb_sg" {
 }
 
 resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
+  description       = "Allow access from internet"
   type              = "ingress"
   security_group_id = aws_security_group.sandbox_lb_sg.id
   from_port         = local.http
@@ -72,6 +73,7 @@ resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
 }
 
 resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
+  description              = "Allow egress for the EC2 instances"
   type                     = "egress"
   security_group_id        = aws_security_group.sandbox_lb_sg.id
   from_port                = var.server_port
