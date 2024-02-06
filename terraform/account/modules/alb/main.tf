@@ -1,5 +1,5 @@
 resource "aws_lb" "sandbox_lb" {
-  name                       = "${var.web_cluster_name}-lb"
+  name                       = "${var.cluster_name}-lb"
   load_balancer_type         = "application"
   subnets                    = var.subnet_ids
   security_groups            = [aws_security_group.sandbox_lb_sg.id]
@@ -41,7 +41,7 @@ resource "aws_lb_listener_rule" "sandbox_asg" {
 }
 
 resource "aws_lb_target_group" "sandbox_asg" {
-  name     = "${var.web_cluster_name}-asg"
+  name     = "${var.cluster_name}-asg"
   port     = var.server_port
   protocol = "HTTP"
   vpc_id   = var.vpc_id
@@ -58,11 +58,12 @@ resource "aws_lb_target_group" "sandbox_asg" {
 }
 
 resource "aws_security_group" "sandbox_lb_sg" {
-  name        = "${var.web_cluster_name}-lb-sg"
+  name        = "${var.cluster_name}-lb-sg"
   description = "Allow access from the internet"
 }
 
 resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
+  description       = "Allow access from internet"
   type              = "ingress"
   security_group_id = aws_security_group.sandbox_lb_sg.id
   from_port         = local.http
@@ -72,11 +73,25 @@ resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
 }
 
 resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
+  description              = "Allow egress for the EC2 instances"
   type                     = "egress"
   security_group_id        = aws_security_group.sandbox_lb_sg.id
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
-  source_security_group_id = var.ec2_security_group
+  source_security_group_id = var.security_group
+}
 
+# If our loadbalancer is public, we use the default subnets, therefore
+# we need to create new ones if the loadbalancer is private
+resource "aws_subnet" "private-subnet" {
+  for_each = local.subnets
+
+  vpc_id            = var.vpc_id
+  cidr_block        = each.value.cidr_block
+  availability_zone = "eu-west-1${each.key}"
+
+  tags = {
+    Name = "private-subnet-${each.key}"
+  }
 }
