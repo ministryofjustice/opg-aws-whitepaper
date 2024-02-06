@@ -23,3 +23,19 @@ variable "web_cluster_name" {
   description = "The name for the cluster of resources"
   type        = string
 }
+
+variable "web_server" {
+  description = "Whether the EC2 instance is publicly accessible"
+  type        = bool
+}
+
+variable "app_alb_fqdn" {
+  description = "The URL for the app server ALB"
+  type        = string
+  default     = ""
+}
+
+variable "app_server_port" {
+  description = "The outbound app server port"
+  type        = number
+}
