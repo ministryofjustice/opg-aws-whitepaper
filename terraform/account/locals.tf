@@ -16,6 +16,8 @@ locals {
 
   default_tags = merge(local.mandatory_moj_tags, local.optional_tags)
 
-  server_port      = 8080
+  web_server_port  = 8000
   web_cluster_name = "sandbox"
+
+  app_server_port = 8080
 }
