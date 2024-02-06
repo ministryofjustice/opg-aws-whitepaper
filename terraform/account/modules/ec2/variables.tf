@@ -28,3 +28,14 @@ variable "web_server" {
   description = "Whether the EC2 instance is publicly accessible"
   type        = bool
 }
+
+variable "app_alb_fqdn" {
+  description = "The URL for the app server ALB"
+  type        = string
+  default     = ""
+}
+
+variable "app_server_port" {
+  description = "The outbound app server port"
+  type        = number
+}

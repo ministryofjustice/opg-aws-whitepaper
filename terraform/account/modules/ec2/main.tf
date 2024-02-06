@@ -17,7 +17,7 @@ resource "aws_launch_configuration" "sandbox" {
     create_before_destroy = true
   }
 
-  user_data = local.web_data_script
+  user_data = var.web_server ? local.web_data_script : local.app_data_script
 
 }
 
@@ -33,7 +33,7 @@ resource "aws_autoscaling_group" "sandbox" {
 }
 
 resource "aws_security_group" "public-inbound" {
-  name        = "public-sandbox-sg"
+  name        = "public-sandbox-inbound-sg"
   description = "Allow public inbound HTTP traffic"
 }
 
@@ -48,7 +48,7 @@ resource "aws_security_group_rule" "public-inbound" {
 }
 
 resource "aws_security_group" "private-inbound" {
-  name        = "private-sandbox-sg"
+  name        = "private-sandbox-inbound-sg"
   description = "Allow internal inbound HTTP traffic"
 }
 
@@ -58,6 +58,21 @@ resource "aws_security_group_rule" "private-inbound" {
   security_group_id        = aws_security_group.private-inbound.id
   from_port                = var.server_port
   to_port                  = var.server_port
+  protocol                 = "tcp"
+  source_security_group_id = var.alb_security_group
+}
+
+resource "aws_security_group" "private-outbound" {
+  description = "Allow egress to the private ALB"
+  name        = "private-sandbox-outbound-sg"
+}
+
+resource "aws_security_group_rule" "private-outbound" {
+  description              = "Allow ingress to private ALB"
+  type                     = "egress"
+  security_group_id        = aws_security_group.private-outbound.id
+  from_port                = var.app_server_port
+  to_port                  = var.app_server_port
   protocol                 = "tcp"
   source_security_group_id = var.alb_security_group
 }
