@@ -1,7 +1,7 @@
 module "public-loadbalancer" {
   source             = "./modules/alb"
   vpc_id             = data.aws_vpc.default.id
-  private            = false
+  public             = true
   subnet_ids         = data.aws_subnets.default.ids
   availability_zones = data.aws_availability_zones.default.names
   server_port        = local.web_server_port
@@ -16,7 +16,7 @@ module "public-loadbalancer" {
 module "internal-loadbalancer" {
   source             = "./modules/alb"
   vpc_id             = data.aws_vpc.default.id
-  private            = true
+  public             = false
   availability_zones = data.aws_availability_zones.default.names
   cluster_name       = "private-${local.web_cluster_name}"
   server_port        = local.app_server_port
@@ -33,8 +33,8 @@ module "ec2-web" {
   target_group_arns   = module.public-loadbalancer.target_group_arns
   default_aws_subnets = data.aws_subnets.default.ids
   server_port         = local.web_server_port
-  web_cluster_name    = local.web_cluster_name
-  web_server          = true
+  cluster_name        = local.web_cluster_name
+  public              = true
   app_server_port     = local.app_server_port
   app_alb_fqdn        = module.internal-loadbalancer.alb_fqdn
   providers = {
@@ -49,8 +49,8 @@ module "ec2-app" {
   default_aws_subnets = data.aws_subnets.default.ids
   server_port         = local.app_server_port
   app_server_port     = local.app_server_port
-  web_cluster_name    = local.web_cluster_name
-  web_server          = false
+  cluster_name        = local.web_cluster_name
+  public              = false
   providers = {
     aws = aws.sandbox
   }

@@ -38,8 +38,8 @@ variable "security_group" {
   type        = string
 }
 
-variable "private" {
-  description = "The bool to check if the loadbalancer is private"
+variable "public" {
+  description = "The bool to check if the loadbalancer is publi"
   type        = bool
   default     = false
 }
