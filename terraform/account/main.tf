@@ -17,6 +17,7 @@ module "internal-loadbalancer" {
   source             = "./modules/alb"
   vpc_id             = data.aws_vpc.default.id
   public             = false
+  subnet_ids         = module.internal-loadbalancer.subnet_ids
   availability_zones = data.aws_availability_zones.default.names
   cluster_name       = "private-${local.web_cluster_name}"
   server_port        = local.app_server_port

@@ -25,7 +25,6 @@ variable "vpc_id" {
 variable "subnet_ids" {
   description = "The subnets to create the ALB in"
   type        = set(string)
-  default     = ([])
 }
 
 variable "availability_zones" {

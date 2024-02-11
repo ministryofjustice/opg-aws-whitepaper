@@ -19,14 +19,15 @@ variable "default_aws_subnets" {
   type        = set(string)
 }
 
-variable "web_cluster_name" {
+variable "cluster_name" {
   description = "The name for the cluster of resources"
   type        = string
 }
 
-variable "web_server" {
+variable "public" {
   description = "Whether the EC2 instance is publicly accessible"
   type        = bool
+  default     = false
 }
 
 variable "app_alb_fqdn" {
