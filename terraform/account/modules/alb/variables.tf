@@ -25,7 +25,6 @@ variable "vpc_id" {
 variable "subnet_ids" {
   description = "The subnets to create the ALB in"
   type        = set(string)
-  default     = ([])
 }
 
 variable "availability_zones" {
@@ -38,8 +37,8 @@ variable "security_group" {
   type        = string
 }
 
-variable "private" {
-  description = "The bool to check if the loadbalancer is private"
+variable "public" {
+  description = "The bool to check if the loadbalancer is publi"
   type        = bool
   default     = false
 }
