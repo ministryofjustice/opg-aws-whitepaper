@@ -91,6 +91,7 @@ resource "aws_subnet" "private-subnet" {
   cidr_block        = each.value
   availability_zone = element(local.az_list, index(local.subnet_cidrs, each.value))
 
+
   tags = {
     Name = "private-subnet-${each.key}"
   }
