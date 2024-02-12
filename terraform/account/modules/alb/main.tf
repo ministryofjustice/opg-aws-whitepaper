@@ -88,7 +88,7 @@ resource "aws_subnet" "private-subnet" {
   for_each = { for idx, cidr in local.subnet_cidrs : idx => cidr }
 
   vpc_id            = var.vpc_id
-  cidr_block        = each.value.cidr_block
+  cidr_block        = each.value
   availability_zone = "eu-west-1${each.key}"
 
   tags = {
