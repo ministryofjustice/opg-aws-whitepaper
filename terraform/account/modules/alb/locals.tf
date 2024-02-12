@@ -9,5 +9,5 @@ locals {
     "c" = { cidr_block = "10.0.3.0/16" }
   }
 
-  subnet_cidrs = var.public ? [] : cidrsubnets(var.vpc_cidr_block, 24, 24, 24)
+  subnet_cidrs = var.public ? [] : cidrsubnets(var.vpc_cidr_block, 8, 8, 8)
 }
