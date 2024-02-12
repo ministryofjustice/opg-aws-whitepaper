@@ -9,8 +9,5 @@ locals {
     "c" = { cidr_block = "10.0.3.0/16" }
   }
 
-  subnet_cidrs = cidrsubnets(var.vpc_id.cidr_block, 24, 24, 24)
-
-  # If the loadbalancer is public, we don't want to create unnecessary subnets
-  subnets = var.public ? {} : local.private_subnets
+  subnet_cidrs = var.public ? [] : cidrsubnets(var.vpc_cidr_block, 24, 24, 24)
 }

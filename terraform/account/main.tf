@@ -16,6 +16,7 @@ module "public-loadbalancer" {
 module "internal-loadbalancer" {
   source             = "./modules/alb"
   vpc_id             = data.aws_vpc.default.id
+  vpc_cidr_block     = data.aws_vpc.default.cidr_block
   public             = false
   subnet_ids         = module.internal-loadbalancer.subnet_ids
   availability_zones = data.aws_availability_zones.default.names
