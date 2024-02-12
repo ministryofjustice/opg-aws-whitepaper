@@ -1,8 +1,8 @@
 resource "aws_launch_configuration" "sandbox" {
   image_id                    = "ami-0905a3c97561e0b69"
   instance_type               = "t2.micro"
-  security_groups             = var.web_server ? [aws_security_group.public-inbound.id] : [aws_security_group.private-inbound.id]
-  name_prefix                 = var.web_cluster_name
+  security_groups             = var.public ? [aws_security_group.public-inbound.id] : [aws_security_group.private-inbound.id]
+  name_prefix                 = var.cluster_name
   associate_public_ip_address = false
 
   root_block_device {
@@ -17,7 +17,10 @@ resource "aws_launch_configuration" "sandbox" {
     create_before_destroy = true
   }
 
-  user_data = var.web_server ? local.web_data_script : local.app_data_script
+  # If the EC2 instance allows ingress from the public facing
+  # ALB, then we know it's the web server and needs that
+  # user data script
+  user_data = var.public ? local.web_data_script : local.app_data_script
 
 }
 
@@ -33,7 +36,7 @@ resource "aws_autoscaling_group" "sandbox" {
 }
 
 resource "aws_security_group" "public-inbound" {
-  name        = "public-sandbox-inbound-sg"
+  name        = "${var.cluster_name}-public-inbound-sg"
   description = "Allow public inbound HTTP traffic"
 }
 
@@ -48,7 +51,7 @@ resource "aws_security_group_rule" "public-inbound" {
 }
 
 resource "aws_security_group" "private-inbound" {
-  name        = "private-sandbox-inbound-sg"
+  name        = "${var.cluster_name}-private-inbound-sg"
   description = "Allow internal inbound HTTP traffic"
 }
 
@@ -64,7 +67,7 @@ resource "aws_security_group_rule" "private-inbound" {
 
 resource "aws_security_group" "private-outbound" {
   description = "Allow egress to the private ALB"
-  name        = "private-sandbox-outbound-sg"
+  name        = "${var.cluster_name}-private-outbound-sg"
 }
 
 resource "aws_security_group_rule" "private-outbound" {
