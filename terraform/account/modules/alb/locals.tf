@@ -10,4 +10,6 @@ locals {
   }
 
   subnet_cidrs = var.public ? [] : cidrsubnets(var.vpc_cidr_block, 8, 8, 8)
+
+  az_list = tolist(var.availability_zones)
 }
