@@ -1,3 +1,7 @@
+# Try using the default vpc resource instead of the data source
+resource "aws_default_vpc" "default" {
+}
+
 resource "aws_lb" "sandbox_lb" {
   name                       = "${var.cluster_name}-lb"
   load_balancer_type         = "application"

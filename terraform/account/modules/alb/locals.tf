@@ -9,7 +9,7 @@ locals {
     "c" = { cidr_block = "10.0.3.0/16" }
   }
 
-  subnet_cidrs = var.public ? [] : cidrsubnets("172.31.48.0/16", 8, 8, 8)
+  subnet_cidrs = var.public ? [] : cidrsubnets(aws_default_vpc.default.cidr_block, 8, 8, 8)
 
   az_list = tolist(var.availability_zones)
 }
