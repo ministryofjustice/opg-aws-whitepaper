@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "sandbox" {
   image_id                    = "ami-0905a3c97561e0b69"
   instance_type               = "t2.micro"
-  security_groups             = var.public ? [aws_security_group.public-inbound.id] : [aws_security_group.private-inbound.id]
+  security_groups             = var.public ? [aws_security_group.public-inbound[0].id] : [aws_security_group.private-inbound[0].id]
   name_prefix                 = var.cluster_name
   associate_public_ip_address = false
 
@@ -36,14 +36,16 @@ resource "aws_autoscaling_group" "sandbox" {
 }
 
 resource "aws_security_group" "public-inbound" {
+  count       = var.public ? 1 : 0
   name        = "${var.cluster_name}-public-inbound-sg"
   description = "Allow public inbound HTTP traffic"
 }
 
 resource "aws_security_group_rule" "public-inbound" {
+  count                    = var.public ? 1 : 0
   description              = "Allow ingress from public ALB"
   type                     = "ingress"
-  security_group_id        = aws_security_group.public-inbound.id
+  security_group_id        = aws_security_group.public-inbound[0].id
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
@@ -51,14 +53,16 @@ resource "aws_security_group_rule" "public-inbound" {
 }
 
 resource "aws_security_group" "private-inbound" {
+  count       = var.public == false ? 1 : 0
   name        = "${var.cluster_name}-private-inbound-sg"
   description = "Allow internal inbound HTTP traffic"
 }
 
 resource "aws_security_group_rule" "private-inbound" {
+  count                    = var.public == false ? 1 : 0
   description              = "Allow ingress from private ALB"
   type                     = "ingress"
-  security_group_id        = aws_security_group.private-inbound.id
+  security_group_id        = aws_security_group.private-inbound[0].id
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
@@ -66,14 +70,16 @@ resource "aws_security_group_rule" "private-inbound" {
 }
 
 resource "aws_security_group" "private-outbound" {
+  count       = var.public == false ? 1 : 0
   description = "Allow egress to the private ALB"
   name        = "${var.cluster_name}-private-outbound-sg"
 }
 
 resource "aws_security_group_rule" "private-outbound" {
+  count                    = var.public == false ? 1 : 0
   description              = "Allow ingress to private ALB"
   type                     = "egress"
-  security_group_id        = aws_security_group.private-outbound.id
+  security_group_id        = aws_security_group.private-outbound[0].id
   from_port                = var.app_server_port
   to_port                  = var.app_server_port
   protocol                 = "tcp"
