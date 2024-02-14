@@ -86,14 +86,14 @@ resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
   source_security_group_id = var.security_group
 }
 
-# If our loadbalancer is public, we use the default subnets, therefore
+# If our loadbalancer is public then we use the default subnets, therefore
 # we need to create new ones if the loadbalancer is private
 resource "aws_subnet" "private-subnet" {
   for_each = local.private_subnets
 
   vpc_id            = var.vpc_id
   cidr_block        = each.value.cidr
-  availability_zone = element(local.az_list, index(local.subnet_cidrs, each.key))
+  availability_zone = element(local.az_list, (count.index % length(local.az_list)))
 
 
   tags = {
