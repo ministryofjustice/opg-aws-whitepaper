@@ -93,7 +93,7 @@ resource "aws_subnet" "private-subnet" {
 
   vpc_id            = var.vpc_id
   cidr_block        = each.value.cidr
-  availability_zone = element(local.az_list, index(local.subnet_cidrs, each.value))
+  availability_zone = element(local.az_list, index(local.subnet_cidrs, each.key))
 
 
   tags = {
