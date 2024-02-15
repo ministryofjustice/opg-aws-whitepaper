@@ -11,7 +11,6 @@ resource "aws_lb_listener" "http" {
   port              = local.http
   protocol          = "HTTP"
 
-
   # By default, return a 404 page
   default_action {
     type = "fixed-response"
@@ -58,7 +57,7 @@ resource "aws_lb_target_group" "sandbox_asg" {
 }
 
 resource "aws_security_group" "sandbox_lb_sg" {
-
+  vpc_id      = var.vpc_id
   name        = "${var.cluster_name}-lb-sg"
   description = "Allow access from the internet"
 }
@@ -75,6 +74,7 @@ resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
 }
 
 resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
+  count                    = var.public ? 1 : 0
   description              = "Allow egress for the EC2 instances"
   type                     = "egress"
   security_group_id        = aws_security_group.sandbox_lb_sg.id
