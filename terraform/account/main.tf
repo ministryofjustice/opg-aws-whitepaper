@@ -9,7 +9,7 @@ module "public-loadbalancer" {
   source             = "./modules/alb"
   vpc_id             = module.network.vpc.id
   public             = true
-  subnet_ids         = module.network.public_subnets
+  subnet_ids         = module.network.public_subnets_ids
   availability_zones = data.aws_availability_zones.default.names
   server_port        = local.web_server_port
   security_group     = module.ec2-web.public_security_group_id
