@@ -92,7 +92,7 @@ resource "aws_subnet" "private-subnet" {
   count                           = 3
   vpc_id                          = data.aws_vpc.default.id
   cidr_block                      = cidrsubnet(data.aws_vpc.default.cidr_block, 8, count.index + 95)
-  availability_zone               = data.availability_zones.all.names[count.index]
+  availability_zone               = data.aws_availability_zones.all.names[count.index]
   map_public_ip_on_launch         = false
   assign_ipv6_address_on_creation = false
 }
