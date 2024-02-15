@@ -1,7 +1,7 @@
 resource "aws_lb" "sandbox_lb" {
   name                       = "${var.cluster_name}-lb"
   load_balancer_type         = "application"
-  subnets                    = var.public ? aws_subnet.public_subnet[*].id : aws_subnet.private_subnet[*].id
+  subnets                    = var.subnet_ids
   security_groups            = [aws_security_group.sandbox_lb_sg.id]
   drop_invalid_header_fields = true
 }
