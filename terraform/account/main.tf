@@ -24,7 +24,7 @@ module "ec2-web" {
   source             = "./modules/ec2"
   alb_security_group = module.public-loadbalancer.alb_security_group_id
   target_group_arns  = module.public-loadbalancer.target_group_arns
-  subnet_ids         = data.aws_subnets.default.ids
+  subnet_ids         = module.network.public_subnets_ids
   server_port        = local.web_server_port
   cluster_name       = local.web_cluster_name
   public             = true
