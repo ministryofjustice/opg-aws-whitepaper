@@ -1,3 +1,7 @@
+# Try using the default vpc resource instead of the data source
+resource "aws_default_vpc" "default" {
+}
+
 resource "aws_lb" "sandbox_lb" {
   name                       = "${var.cluster_name}-lb"
   load_balancer_type         = "application"
@@ -82,17 +86,14 @@ resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
   source_security_group_id = var.security_group
 }
 
-# If our loadbalancer is public, we use the default subnets, therefore
+# If our loadbalancer is public then we use the default subnets, therefore
 # we need to create new ones if the loadbalancer is private
 resource "aws_subnet" "private-subnet" {
-  for_each = { for idx, cidr in local.subnet_cidrs : idx => cidr }
-
-  vpc_id            = var.vpc_id
-  cidr_block        = each.value
-  availability_zone = element(local.az_list, index(local.subnet_cidrs, each.value))
-
-
-  tags = {
-    Name = "private-subnet-${each.key}"
-  }
+  count                           = 3
+  vpc_id                          = data.aws_vpc.default.id
+  cidr_block                      = cidrsubnet(data.aws_vpc.default.cidr_block, 8, count.index + 95)
+  availability_zone               = data.availability_zones.all.names[count.index]
+  map_public_ip_on_launch         = false
+  assign_ipv6_address_on_creation = false
 }
+
