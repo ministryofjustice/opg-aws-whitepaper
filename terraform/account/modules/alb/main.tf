@@ -58,6 +58,7 @@ resource "aws_lb_target_group" "sandbox_asg" {
 }
 
 resource "aws_security_group" "sandbox_lb_sg" {
+
   name        = "${var.cluster_name}-lb-sg"
   description = "Allow access from the internet"
 }
