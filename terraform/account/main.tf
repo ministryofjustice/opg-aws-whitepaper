@@ -26,7 +26,7 @@ module "ec2-web" {
   cluster_name       = local.web_cluster_name
   public             = true
   app_server_port    = local.app_server_port
-  app_alb_fqdn       = module.internal-loadbalancer.alb_fqdn
+  # app_alb_fqdn       = module.internal-loadbalancer.alb_fqdn
   providers = {
     aws = aws.sandbox
   }
