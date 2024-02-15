@@ -1,11 +1,7 @@
-# Try using the default vpc resource instead of the data source
-resource "aws_default_vpc" "default" {
-}
-
 resource "aws_lb" "sandbox_lb" {
   name                       = "${var.cluster_name}-lb"
   load_balancer_type         = "application"
-  subnets                    = var.subnet_ids
+  subnets                    = var.public ? aws_subnet.public_subnet[*].id : aws_subnet.private_subnet[*].id
   security_groups            = [aws_security_group.sandbox_lb_sg.id]
   drop_invalid_header_fields = true
 }
@@ -67,6 +63,7 @@ resource "aws_security_group" "sandbox_lb_sg" {
 }
 
 resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
+  count             = var.public ? 1 : 0
   description       = "Allow access from internet"
   type              = "ingress"
   security_group_id = aws_security_group.sandbox_lb_sg.id
@@ -88,12 +85,28 @@ resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
 
 # If our loadbalancer is public then we use the default subnets, therefore
 # we need to create new ones if the loadbalancer is private
-resource "aws_subnet" "private-subnet" {
-  count                           = var.public ? 0 : 3
+resource "aws_subnet" "private_subnet" {
+  count                           = var.public == false ? 3 : 0
   vpc_id                          = data.aws_vpc.default.id
   cidr_block                      = cidrsubnet(data.aws_vpc.default.cidr_block, 8, count.index + 50)
   availability_zone               = data.aws_availability_zones.all.names[count.index]
   map_public_ip_on_launch         = false
   assign_ipv6_address_on_creation = false
+
+  tags = {
+    Name = "${var.cluster_name}-subnet"
+  }
 }
 
+resource "aws_subnet" "public_subnet" {
+  count                           = var.public ? 3 : 0
+  vpc_id                          = data.aws_vpc.default.id
+  cidr_block                      = cidrsubnet(data.aws_vpc.default.cidr_block, 8, count.index + 10)
+  availability_zone               = data.aws_availability_zones.all.names[count.index]
+  map_public_ip_on_launch         = false
+  assign_ipv6_address_on_creation = false
+
+  tags = {
+    Name = "${var.cluster_name}-subnet"
+  }
+}
