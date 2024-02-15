@@ -1,5 +1,8 @@
 module "network" {
   source = "./modules/network"
+  providers = {
+    aws = aws.sandbox
+  }
 }
 
 module "public-loadbalancer" {
