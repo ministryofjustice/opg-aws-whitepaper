@@ -42,3 +42,8 @@ variable "app_server_port" {
   description = "The outbound app server port"
   type        = number
 }
+
+variable "vpc_id" {
+  description = "The VPC for the loadbalancer to use"
+  type        = string
+}

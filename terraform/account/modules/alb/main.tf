@@ -1,7 +1,7 @@
 resource "aws_lb" "sandbox_lb" {
   name                       = "${var.cluster_name}-lb"
   load_balancer_type         = "application"
-  subnets                    = var.public ? aws_subnet.public_subnet[*].id : aws_subnet.private_subnet[*].id
+  subnets                    = var.subnet_ids
   security_groups            = [aws_security_group.sandbox_lb_sg.id]
   drop_invalid_header_fields = true
 }
@@ -84,6 +84,7 @@ resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
   source_security_group_id = var.security_group
 }
 
+/*
 # If our loadbalancer is public then we use the default subnets, therefore
 # we need to create new ones if the loadbalancer is private
 resource "aws_subnet" "private_subnet" {
@@ -111,3 +112,4 @@ resource "aws_subnet" "public_subnet" {
     Name = "${var.cluster_name}-subnet"
   }
 }
+*/
