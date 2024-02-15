@@ -26,7 +26,7 @@ resource "aws_launch_configuration" "sandbox" {
 
 resource "aws_autoscaling_group" "sandbox" {
   launch_configuration = aws_launch_configuration.sandbox.name
-  vpc_zone_identifier  = var.default_aws_subnets
+  vpc_zone_identifier  = var.subnet_ids
 
   target_group_arns = var.target_group_arns
   health_check_type = "ELB"
