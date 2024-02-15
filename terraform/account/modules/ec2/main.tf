@@ -21,7 +21,6 @@ resource "aws_launch_configuration" "sandbox" {
   # ALB, then we know it's the web server and needs that
   # user data script
   user_data = var.public ? local.web_data_script : local.app_data_script
-
 }
 
 resource "aws_autoscaling_group" "sandbox" {
@@ -37,6 +36,7 @@ resource "aws_autoscaling_group" "sandbox" {
 
 resource "aws_security_group" "public-inbound" {
   count       = var.public ? 1 : 0
+  vpc_id      = var.vpc_id
   name        = "${var.cluster_name}-public-inbound-sg"
   description = "Allow public inbound HTTP traffic"
 }
@@ -54,6 +54,7 @@ resource "aws_security_group_rule" "public-inbound" {
 
 resource "aws_security_group" "private-inbound" {
   count       = var.public == false ? 1 : 0
+  vpc_id      = var.vpc_id
   name        = "${var.cluster_name}-private-inbound-sg"
   description = "Allow internal inbound HTTP traffic"
 }
@@ -71,6 +72,7 @@ resource "aws_security_group_rule" "private-inbound" {
 
 resource "aws_security_group" "private-outbound" {
   count       = var.public == false ? 1 : 0
+  vpc_id      = var.vpc_id
   description = "Allow egress to the private ALB"
   name        = "${var.cluster_name}-private-outbound-sg"
 }
