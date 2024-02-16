@@ -61,6 +61,8 @@ resource "aws_security_group_rule" "public-inbound" {
 
 resource "aws_security_group" "public-outbound" {
   description = "Allow outbound to clone git repo etc"
+  vpc_id      = var.vpc_id
+  name        = "${var.cluster_name}-public-outbound"
 }
 
 resource "aws_security_group_rule" "public-outbound" {
