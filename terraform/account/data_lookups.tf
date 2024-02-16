@@ -3,6 +3,7 @@ data "aws_vpc" "default" {
   provider = aws.sandbox
 }
 
+
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
