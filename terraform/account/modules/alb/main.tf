@@ -59,7 +59,7 @@ resource "aws_lb_target_group" "sandbox_asg" {
 resource "aws_security_group" "sandbox_lb_sg" {
   vpc_id      = var.vpc_id
   name        = "${var.cluster_name}-lb-sg"
-  description = "Allow access from the internet"
+  description = "Loadbalancer security group"
 }
 
 resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
@@ -84,32 +84,13 @@ resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
   source_security_group_id = var.security_group
 }
 
-/*
-# If our loadbalancer is public then we use the default subnets, therefore
-# we need to create new ones if the loadbalancer is private
-resource "aws_subnet" "private_subnet" {
-  count                           = var.public == false ? 3 : 0
-  vpc_id                          = data.aws_vpc.default.id
-  cidr_block                      = cidrsubnet(data.aws_vpc.default.cidr_block, 8, count.index + 50)
-  availability_zone               = data.aws_availability_zones.all.names[count.index]
-  map_public_ip_on_launch         = false
-  assign_ipv6_address_on_creation = false
-
-  tags = {
-    Name = "${var.cluster_name}-subnet"
-  }
+resource "aws_security_group_rule" "sandbox_lb_sg_private_ingress" {
+  count                    = var.public ? 0 : 1
+  description              = "Allow access from web servers"
+  type                     = "ingress"
+  security_group_id        = aws_security_group.sandbox_lb_sg.id
+  from_port                = var.server_port
+  to_port                  = var.server_port
+  protocol                 = "tcp"
+  source_security_group_id = var.security_group
 }
-
-resource "aws_subnet" "public_subnet" {
-  count                           = var.public ? 3 : 0
-  vpc_id                          = data.aws_vpc.default.id
-  cidr_block                      = cidrsubnet(data.aws_vpc.default.cidr_block, 8, count.index + 10)
-  availability_zone               = data.aws_availability_zones.all.names[count.index]
-  map_public_ip_on_launch         = false
-  assign_ipv6_address_on_creation = false
-
-  tags = {
-    Name = "${var.cluster_name}-subnet"
-  }
-}
-*/
