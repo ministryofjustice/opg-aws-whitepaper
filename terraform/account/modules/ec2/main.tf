@@ -20,7 +20,13 @@ resource "aws_launch_configuration" "sandbox" {
   # If the EC2 instance allows ingress from the public facing
   # ALB, then we know it's the web server and needs that
   # user data script
-  user_data = var.public ? local.web_data_script : local.app_data_script
+  # user_data = var.public ? local.web_data_script : local.app_data_script
+
+  user_data = <<-EOF
+    #!/bin/bash
+    echo "Hello, World!" > index.html
+    nohup busybox httpd -f -p 8080 &
+    EOF
 }
 
 resource "aws_autoscaling_group" "sandbox" {
