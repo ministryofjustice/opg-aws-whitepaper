@@ -14,10 +14,12 @@ variable "alb_security_group" {
   type        = string
 }
 
-variable "default_aws_subnets" {
-  description = "The default subnets in AWS"
+variable "subnet_ids" {
+  description = "The subnets to use"
   type        = set(string)
 }
+
+
 
 variable "cluster_name" {
   description = "The name for the cluster of resources"
@@ -39,4 +41,9 @@ variable "app_alb_fqdn" {
 variable "app_server_port" {
   description = "The outbound app server port"
   type        = number
+}
+
+variable "vpc_id" {
+  description = "The VPC for the loadbalancer to use"
+  type        = string
 }

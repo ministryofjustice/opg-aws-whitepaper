@@ -20,7 +20,7 @@ resource "aws_launch_configuration" "sandbox" {
   # If the EC2 instance allows ingress from the public facing
   # ALB, then we know it's the web server and needs that
   # user data script
-  // user_data = var.public ? local.web_data_script : local.app_data_script
+  # user_data = var.public ? local.web_data_script : local.app_data_script
 
   user_data = <<-EOF
     #!/bin/bash
@@ -31,7 +31,7 @@ resource "aws_launch_configuration" "sandbox" {
 
 resource "aws_autoscaling_group" "sandbox" {
   launch_configuration = aws_launch_configuration.sandbox.name
-  vpc_zone_identifier  = var.default_aws_subnets
+  vpc_zone_identifier  = var.subnet_ids
 
   target_group_arns = var.target_group_arns
   health_check_type = "ELB"
@@ -42,6 +42,7 @@ resource "aws_autoscaling_group" "sandbox" {
 
 resource "aws_security_group" "public-inbound" {
   count       = var.public ? 1 : 0
+  vpc_id      = var.vpc_id
   name        = "${var.cluster_name}-public-inbound-sg"
   description = "Allow public inbound HTTP traffic"
 }
@@ -59,6 +60,7 @@ resource "aws_security_group_rule" "public-inbound" {
 
 resource "aws_security_group" "private-inbound" {
   count       = var.public == false ? 1 : 0
+  vpc_id      = var.vpc_id
   name        = "${var.cluster_name}-private-inbound-sg"
   description = "Allow internal inbound HTTP traffic"
 }
@@ -76,6 +78,7 @@ resource "aws_security_group_rule" "private-inbound" {
 
 resource "aws_security_group" "private-outbound" {
   count       = var.public == false ? 1 : 0
+  vpc_id      = var.vpc_id
   description = "Allow egress to the private ALB"
   name        = "${var.cluster_name}-private-outbound-sg"
 }
