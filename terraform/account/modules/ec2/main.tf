@@ -71,7 +71,7 @@ resource "aws_security_group_rule" "public-outbound" {
   security_group_id = aws_security_group.public-outbound.id
   from_port         = 0
   to_port           = 0
-  protocol          = "tcp"
+  protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
@@ -125,4 +125,10 @@ resource "aws_security_group_rule" "private-outbound" {
   to_port                  = var.app_server_port
   protocol                 = "tcp"
   source_security_group_id = var.alb_security_group
+}
+
+resource "aws_network_interface" "public" {
+  subnet_id       = var.subnet_id[0]
+  private_ips     = ["10.0.1.50"]
+  security_groups = [aws_security_group.public-outbound.id]
 }
