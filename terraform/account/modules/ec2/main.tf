@@ -82,10 +82,11 @@ resource "aws_security_group" "ec2-ssh" {
 resource "aws_security_group_rule" "ec2-ssh" {
   description       = "Allow SSH"
   type              = "ingress"
+  security_group_id = aws_security_group.ec2-ssh.id
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  security_group_id = aws_security_group.ec2-ssh.id
+  cidr_blocks       = "0.0.0.0/0"
 }
 
 resource "aws_security_group" "private-outbound" {
