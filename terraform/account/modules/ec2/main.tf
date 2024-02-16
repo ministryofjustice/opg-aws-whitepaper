@@ -23,11 +23,7 @@ resource "aws_launch_configuration" "sandbox" {
   # user data script
   # user_data = var.public ? local.web_data_script : local.app_data_script
 
-  user_data = <<-EOF
-    #!bin/bash
-    echo 'Hello, World' > index.html
-    nohup busybox httpd -f -p ${var.server_port} &
-  EOF
+  user_data = local.app_data_script
 }
 
 resource "aws_autoscaling_group" "sandbox" {
