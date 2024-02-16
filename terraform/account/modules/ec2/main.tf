@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "sandbox" {
   image_id                    = "ami-0905a3c97561e0b69"
   instance_type               = "t2.micro"
-  security_groups             = var.public ? [aws_security_group.public-inbound[0].id, aws_security_group.ec2-ssh.id] : [aws_security_group.private-inbound[0].id]
+  security_groups             = var.public ? [aws_security_group.public-inbound[0].id, aws_security_group.ec2-ssh.id, aws_security_group.public-outbound.id] : [aws_security_group.private-inbound[0].id]
   name_prefix                 = var.cluster_name
   associate_public_ip_address = true
   key_name                    = "sandbox"
@@ -57,6 +57,20 @@ resource "aws_security_group_rule" "public-inbound" {
   to_port                  = var.server_port
   protocol                 = "tcp"
   source_security_group_id = var.alb_security_group
+}
+
+resource "aws_security_group" "public-outbound" {
+  description = "Allow outbound to clone git repo etc"
+}
+
+resource "aws_security_group_rule" "public-outbound" {
+  description       = "Allow outbound"
+  type              = "egress"
+  security_group_id = aws_security_group.public-outbound.id
+  from_port         = 0
+  to_port           = 0
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group" "private-inbound" {
