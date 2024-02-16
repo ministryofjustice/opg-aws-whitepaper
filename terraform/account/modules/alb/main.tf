@@ -62,6 +62,13 @@ resource "aws_security_group" "sandbox_lb_sg" {
   description = "Loadbalancer security group"
 }
 
+resource "aws_security_group" "sandbox_lb_sg_internal" {
+  vpc_id      = var.vpc_id
+  name        = "${var.cluster_name}-lb-sg"
+  description = "Loadbalancer security group"
+}
+
+
 resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
   count             = var.public ? 1 : 0
   description       = "Allow access from internet"
@@ -88,7 +95,7 @@ resource "aws_security_group_rule" "sandbox_lb_sg_private_ingress" {
   count                    = var.public ? 0 : 1
   description              = "Allow access from web servers"
   type                     = "ingress"
-  security_group_id        = aws_security_group.sandbox_lb_sg.id
+  security_group_id        = aws_security_group.sandbox_lb_sg_internal.id
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
