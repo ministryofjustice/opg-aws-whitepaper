@@ -71,7 +71,7 @@ resource "aws_security_group_rule" "public-outbound" {
   security_group_id = aws_security_group.public-outbound.id
   from_port         = 0
   to_port           = 0
-  protocol          = "tcp"
+  protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
