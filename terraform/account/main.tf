@@ -20,6 +20,22 @@ module "public-loadbalancer" {
   }
 }
 
+module "private-loadbalancer" {
+  source             = "./modules/alb"
+  vpc_id             = module.network.vpc.id
+  public             = false
+  subnet_ids         = module.network.private_subnet_ids
+  availability_zones = data.aws_availability_zones.default.names
+  server_port        = local.app_server_port
+  security_group     = module.ec2-web.private_security_group_id
+  cluster_name       = "private-${local.web_cluster_name}"
+
+  providers = {
+    aws = aws.sandbox
+  }
+}
+
+
 module "ec2-web" {
   source             = "./modules/ec2"
   alb_security_group = module.public-loadbalancer.alb_security_group_id
@@ -30,7 +46,23 @@ module "ec2-web" {
   cluster_name       = local.web_cluster_name
   public             = true
   app_server_port    = local.app_server_port
-  # app_alb_fqdn       = module.internal-loadbalancer.alb_fqdn
+  app_alb_fqdn       = module.private-loadbalancer.alb_fqdn
+  providers = {
+    aws = aws.sandbox
+  }
+}
+
+module "ec2-app" {
+  source             = "./modules/ec2"
+  alb_security_group = module.private-loadbalancer.alb_security_group_id
+  vpc_id             = module.network.vpc.id
+  target_group_arns  = module.private-loadbalancer.target_group_arns
+  subnet_ids         = module.network.private_subnet_ids
+  server_port        = local.app_server_port
+  cluster_name       = local.app_cluster_name
+  public             = false
+  app_server_port    = local.app_server_port
+  app_alb_fqdn       = module.private-loadbalancer.alb_fqdn
   providers = {
     aws = aws.sandbox
   }
