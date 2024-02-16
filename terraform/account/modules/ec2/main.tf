@@ -126,9 +126,3 @@ resource "aws_security_group_rule" "private-outbound" {
   protocol                 = "tcp"
   source_security_group_id = var.alb_security_group
 }
-
-resource "aws_network_interface" "public" {
-  subnet_id       = var.subnet_id[0]
-  private_ips     = ["10.0.1.50"]
-  security_groups = [aws_security_group.public-outbound.id]
-}
