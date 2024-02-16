@@ -3,7 +3,7 @@ resource "aws_launch_configuration" "sandbox" {
   instance_type               = "t2.micro"
   security_groups             = var.public ? [aws_security_group.public-inbound[0].id, aws_security_group.ec2-ssh.id] : [aws_security_group.private-inbound[0].id]
   name_prefix                 = var.cluster_name
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   key_name                    = "sandbox"
 
   root_block_device {
