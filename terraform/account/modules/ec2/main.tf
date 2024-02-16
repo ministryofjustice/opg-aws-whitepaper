@@ -86,7 +86,11 @@ resource "aws_security_group_rule" "ec2-ssh" {
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
+<<<<<<< HEAD
   cidr_blocks       = ["0.0.0.0/0"]
+=======
+  cidr_blocks       = "0.0.0.0/0"
+>>>>>>> 9e458e1 (add missing requirement)
 }
 
 resource "aws_security_group" "private-outbound" {
