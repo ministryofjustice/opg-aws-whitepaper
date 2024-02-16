@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "sandbox" {
   image_id                    = "ami-0905a3c97561e0b69"
   instance_type               = "t2.micro"
-  security_groups             = var.public ? [aws_security_group.public-inbound[0].id] : [aws_security_group.private-inbound[0].id]
+  security_groups             = var.public ? [aws_security_group.public-inbound[0].id, aws_security_group.ec2-ssh.id] : [aws_security_group.private-inbound[0].id]
   name_prefix                 = var.cluster_name
   associate_public_ip_address = false
   key_name                    = "sandbox"
@@ -71,6 +71,21 @@ resource "aws_security_group_rule" "private-inbound" {
   to_port                  = var.server_port
   protocol                 = "tcp"
   source_security_group_id = var.alb_security_group
+}
+
+resource "aws_security_group" "ec2-ssh" {
+  description = "Allow SSH for debug"
+  vpc_id      = var.vpc_id
+  name        = "${var.cluster_name}-ssh-sg"
+}
+
+resource "aws_security_group_rule" "ec2-ssh" {
+  description       = "Allow SSH"
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  security_group_id = aws_security_group.ec2-ssh.id
 }
 
 resource "aws_security_group" "private-outbound" {
