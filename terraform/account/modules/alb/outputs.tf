@@ -3,7 +3,7 @@ output "target_group_arns" {
 }
 
 output "alb_security_group_id" {
-  value = aws_security_group.sandbox_lb_sg.id
+  value = var.public ? aws_security_group.sandbox_lb_sg_public[0].id : aws_security_group.sandbox_lb_sg_internal[0].id
 }
 
 output "alb_fqdn" {
