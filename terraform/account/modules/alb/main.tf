@@ -2,7 +2,7 @@ resource "aws_lb" "sandbox_lb" {
   name                       = "${var.cluster_name}-lb"
   load_balancer_type         = "application"
   subnets                    = var.subnet_ids
-  security_groups            = [aws_security_group.sandbox_lb_sg.id]
+  security_groups            = var.public ? [aws_security_group.sandbox_lb_sg_public[0].id] : [aws_security_group.sandbox_lb_sg_internal[0].id]
   drop_invalid_header_fields = true
 }
 
@@ -56,7 +56,7 @@ resource "aws_lb_target_group" "sandbox_asg" {
   }
 }
 
-resource "aws_security_group" "sandbox_lb_sg" {
+resource "aws_security_group" "sandbox_lb_sg_public" {
   count       = var.public ? 1 : 0
   vpc_id      = var.vpc_id
   name        = "${var.cluster_name}-lb-sg"
@@ -75,7 +75,7 @@ resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
   count             = var.public ? 1 : 0
   description       = "Allow access from internet"
   type              = "ingress"
-  security_group_id = aws_security_group.sandbox_lb_sg.id
+  security_group_id = aws_security_group.sandbox_lb_sg_public[0].id
   from_port         = local.http
   to_port           = local.http
   protocol          = "tcp"
@@ -86,7 +86,7 @@ resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
   count                    = var.public ? 1 : 0
   description              = "Allow egress for the EC2 instances"
   type                     = "egress"
-  security_group_id        = aws_security_group.sandbox_lb_sg.id
+  security_group_id        = aws_security_group.sandbox_lb_sg_public[0].id
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
@@ -97,7 +97,7 @@ resource "aws_security_group_rule" "sandbox_lb_sg_private_ingress" {
   count                    = var.public ? 0 : 1
   description              = "Allow access from web servers"
   type                     = "ingress"
-  security_group_id        = aws_security_group.sandbox_lb_sg_internal.id
+  security_group_id        = aws_security_group.sandbox_lb_sg_internal[0].id
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
