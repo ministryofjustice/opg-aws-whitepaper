@@ -9,6 +9,10 @@ parser = argparse.ArgumentParser(description="URL for the loadbalancer")
 parser.add_argument("--url", required=True, help="The URL is created from terraform")
 arg = parser.parse_args()
 
+@app.route('/health')
+def health_check():
+   return 'OK', 200
+
 @app.route('/')
 def home():
   try:
