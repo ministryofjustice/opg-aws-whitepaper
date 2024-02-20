@@ -33,11 +33,20 @@ resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index + 45)
   availability_zone = data.aws_availability_zones.all.names[count.index]
+
+  tags = {
+    Name = "private-subnet-${count.index}"
+  }
 }
 
 resource "aws_route_table" "private" {
   count  = 3
   vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
   tags = {
     Name = "private-route-table-${count.index}"
   }
