@@ -1,6 +1,7 @@
 locals {
   http  = 80
   https = 443
+  app   = 8080
   ssh   = 22
 
   private_subnets = {
