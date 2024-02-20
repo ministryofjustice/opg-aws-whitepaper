@@ -6,9 +6,9 @@ resource "aws_lb" "sandbox_lb" {
   drop_invalid_header_fields = true
 }
 
-resource "aws_lb_listener" "http" {
+resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_lb.sandbox_lb.arn
-  port              = local.http
+  port              = var.public ? local.http : local.app
   protocol          = "HTTP"
 
   # By default, return a 404 page
@@ -24,7 +24,7 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_lb_listener_rule" "sandbox_asg" {
-  listener_arn = aws_lb_listener.http.arn
+  listener_arn = aws_lb_listener.listener.arn
   priority     = 100
 
   condition {
@@ -46,7 +46,7 @@ resource "aws_lb_target_group" "sandbox_asg" {
   vpc_id   = var.vpc_id
 
   health_check {
-    path                = "/"
+    path                = "/health"
     protocol            = "HTTP"
     matcher             = "200"
     interval            = 60
