@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "sandbox" {
   image_id                    = "ami-0905a3c97561e0b69"
   instance_type               = "t2.micro"
-  security_groups             = var.public ? [aws_security_group.public-inbound[0].id, aws_security_group.ec2-ssh.id, aws_security_group.outbound.id] : [aws_security_group.private-inbound[0].id, aws_security_group.ec2-ssh.id, aws_security_group.outbound.id]
+  security_groups             = var.public ? [aws_security_group.public-inbound[0].id, aws_security_group.ec2-ssh.id, aws_security_group.public-outbound[0].id] : [aws_security_group.private-inbound[0].id, aws_security_group.ec2-ssh.id, aws_security_group.private-outbound[0].id]
   name_prefix                 = var.cluster_name
   associate_public_ip_address = true
   key_name                    = "sandbox"
@@ -55,16 +55,36 @@ resource "aws_security_group_rule" "public-inbound" {
   source_security_group_id = var.alb_security_group
 }
 
-resource "aws_security_group" "outbound" {
+resource "aws_security_group" "public-outbound" {
+  count       = var.public ? 1 : 0
   description = "Allow outbound to clone git repo etc"
   vpc_id      = var.vpc_id
   name        = "${var.cluster_name}-public-outbound"
 }
 
-resource "aws_security_group_rule" "outbound" {
+resource "aws_security_group_rule" "public-outbound" {
+  count             = var.public ? 1 : 0
   description       = "Allow outbound"
   type              = "egress"
-  security_group_id = aws_security_group.outbound.id
+  security_group_id = aws_security_group.public-outbound[0].id
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group" "private-internet-outbound" {
+  count       = var.public ? 0 : 1
+  description = "Allow outbound to clone git repo etc"
+  vpc_id      = var.vpc_id
+  name        = "${var.cluster_name}-private-internet-outbound"
+}
+
+resource "aws_security_group_rule" "private-internet-outbound" {
+  count             = var.public ? 0 : 1
+  description       = "Allow outbound"
+  type              = "egress"
+  security_group_id = aws_security_group.private-internet-outbound[0].id
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
