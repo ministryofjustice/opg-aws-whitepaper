@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "sandbox" {
   image_id                    = "ami-0905a3c97561e0b69"
   instance_type               = "t2.micro"
-  security_groups             = var.public ? [aws_security_group.public-inbound[0].id, aws_security_group.ec2-ssh.id, aws_security_group.public-outbound[0].id] : [aws_security_group.private-inbound[0].id, aws_security_group.ec2-ssh.id, aws_security_group.private-outbound[0].id]
+  security_groups             = var.public ? [aws_security_group.public-inbound[0].id, aws_security_group.ec2-ssh.id, aws_security_group.public-outbound[0].id] : [aws_security_group.private-inbound[0].id, aws_security_group.ec2-ssh.id, aws_security_group.private-outbound[0].id, aws_security_group.private-internet-outbound[0].id]
   name_prefix                 = var.cluster_name
   associate_public_ip_address = true
   key_name                    = "sandbox"
@@ -33,8 +33,8 @@ resource "aws_autoscaling_group" "sandbox" {
   target_group_arns = var.target_group_arns
   health_check_type = "ELB"
 
-  min_size = 2
-  max_size = 4
+  min_size = 1
+  max_size = 2
 }
 
 resource "aws_security_group" "public-inbound" {

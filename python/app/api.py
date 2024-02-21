@@ -5,6 +5,10 @@ import os
 
 app = FastAPI()
 
+@app.get('/health')
+def health_check():
+   return 'OK', 200
+
 @app.get("/")
 def read_root():
     quotes = ["a", "b", "c"]

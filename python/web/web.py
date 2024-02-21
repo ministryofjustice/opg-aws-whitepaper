@@ -10,6 +10,10 @@ parser = argparse.ArgumentParser(description="URL for the loadbalancer")
 parser.add_argument("--url", required=False, help="The URL is created from terraform")
 arg = parser.parse_args()
 
+@app.route('/health')
+def health_check():
+   return 'OK', 200
+
 @app.route('/')
 def home():
   host = f"Host: {os.uname()[1]}"
@@ -22,4 +26,4 @@ def home():
   return render_template('index.html', data=data, host=host)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    app.run(host='0.0.0.0', debug=True, port=8000)
