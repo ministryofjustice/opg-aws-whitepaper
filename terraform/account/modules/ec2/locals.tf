@@ -10,7 +10,7 @@ locals {
 
     pip3 install -r requirements.txt
 
-    python3 web.py
+    python3 web.py --url http://${var.app_alb_fqdn}
   EOF
 
   app_data_script = <<-EOF

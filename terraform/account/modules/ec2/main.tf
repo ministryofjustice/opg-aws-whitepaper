@@ -137,8 +137,8 @@ resource "aws_security_group_rule" "private-outbound" {
   description              = "Allow ingress to private ALB"
   type                     = "egress"
   security_group_id        = aws_security_group.private-outbound[0].id
-  from_port                = var.app_server_port
-  to_port                  = var.app_server_port
+  from_port                = 80
+  to_port                  = 80
   protocol                 = "tcp"
   source_security_group_id = var.alb_security_group
 }
