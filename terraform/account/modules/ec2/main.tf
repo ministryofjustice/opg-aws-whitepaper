@@ -15,7 +15,7 @@ resource "aws_launch_configuration" "sandbox" {
   }
 
   lifecycle {
-    create_before_destroy = true
+    create_before_destroy = false
   }
 
   # If the EC2 instance allows ingress from the public facing
@@ -23,7 +23,7 @@ resource "aws_launch_configuration" "sandbox" {
   # user data script
   # user_data = var.public ? local.web_data_script : local.app_data_script
 
-  user_data = var.public == false ? local.web_data_script : local.app_data_script
+  user_data = var.web ? local.web_data_script : local.app_data_script
 }
 
 resource "aws_autoscaling_group" "sandbox" {
@@ -33,7 +33,7 @@ resource "aws_autoscaling_group" "sandbox" {
   target_group_arns = var.target_group_arns
   health_check_type = "ELB"
 
-  min_size = 1
+  min_size = 2
   max_size = 2
 }
 

@@ -47,3 +47,8 @@ variable "vpc_id" {
   description = "The VPC for the loadbalancer to use"
   type        = string
 }
+
+variable "web" {
+  description = "Bool to set web or app server to bypass public"
+  type        = bool
+}

@@ -8,7 +8,7 @@ resource "aws_lb" "sandbox_lb" {
 
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_lb.sandbox_lb.arn
-  port              = var.public ? local.http : local.app
+  port              = local.http
   protocol          = "HTTP"
 
   # By default, return a 404 page
