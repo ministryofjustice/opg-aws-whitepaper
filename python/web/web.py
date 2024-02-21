@@ -18,12 +18,15 @@ def health_check():
 def home():
   host = f"Host: {os.uname()[1]}"
   try:
-    response = requests.get(arg.url)
-    data = response.text
+    if arg.url == "http://" or arg.url == "":
+       data = "No URL provided."
+    else:
+      response = requests.get(arg.url)
+      data = response.text
   except requests.RequestException as e:
     data = f"Error fetching data: {e}"
 
   return render_template('index.html', data=data, host=host)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=8000)
+    app.run(host='0.0.0.0', port=8000)

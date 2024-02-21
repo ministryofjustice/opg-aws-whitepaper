@@ -31,7 +31,6 @@ module "ec2-web" {
   public             = true
   app_server_port    = local.app_server_port
   web                = true
-  app_alb_fqdn       = module.web-loadbalancer.alb_fqdn
   providers = {
     aws = aws.sandbox
   }
