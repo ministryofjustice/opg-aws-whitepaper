@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # Add the URL from arg from the private loadbalancer
 parser = argparse.ArgumentParser(description="URL for the loadbalancer")
-parser.add_argument("--url", required=True, help="The URL is created from terraform")
+parser.add_argument("--url", required=False, help="The URL is created from terraform")
 arg = parser.parse_args()
 
 @app.route('/health')
