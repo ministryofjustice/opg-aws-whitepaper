@@ -20,6 +20,22 @@ module "public-loadbalancer" {
   }
 }
 
+module "ec2-web" {
+  source             = "./modules/ec2"
+  alb_security_group = module.public-loadbalancer.alb_security_group_id
+  vpc_id             = module.network.vpc.id
+  target_group_arns  = module.public-loadbalancer.target_group_arns
+  subnet_ids         = module.network.public_subnet_ids
+  server_port        = local.web_server_port
+  cluster_name       = local.web_cluster_name
+  public             = true
+  app_server_port    = local.app_server_port
+  providers = {
+    aws = aws.sandbox
+  }
+}
+
+/*
 module "private-loadbalancer" {
   source             = "./modules/alb"
   vpc_id             = module.network.vpc.id
@@ -36,21 +52,6 @@ module "private-loadbalancer" {
 }
 
 
-module "ec2-web" {
-  source             = "./modules/ec2"
-  alb_security_group = module.public-loadbalancer.alb_security_group_id
-  vpc_id             = module.network.vpc.id
-  target_group_arns  = module.public-loadbalancer.target_group_arns
-  subnet_ids         = module.network.public_subnet_ids
-  server_port        = local.web_server_port
-  cluster_name       = local.web_cluster_name
-  public             = true
-  app_server_port    = local.app_server_port
-  app_alb_fqdn       = module.private-loadbalancer.alb_fqdn
-  providers = {
-    aws = aws.sandbox
-  }
-}
 
 module "ec2-app" {
   source             = "./modules/ec2"
@@ -67,3 +68,4 @@ module "ec2-app" {
     aws = aws.sandbox
   }
 }
+*/
