@@ -8,7 +8,7 @@ variable "cluster_name" {
 variable "server_port" {
   description = "The port the server will use for HTTP requests"
   type        = number
-  default     = 8080
+  default     = 8000
 }
 
 variable "custom_tags" {
