@@ -44,7 +44,7 @@ module "public-loadbalancer" {
   subnet_ids         = module.network.public_subnet_ids
   availability_zones = data.aws_availability_zones.default.names
   server_port        = local.app_server_port
-  security_group     = module.ec2-web.public_security_group_id
+  security_group     = module.ec2-app.public_security_group_id
   cluster_name       = "public-${local.app_cluster_name}"
 
   providers = {
