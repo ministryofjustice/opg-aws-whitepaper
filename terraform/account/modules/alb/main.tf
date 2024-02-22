@@ -4,6 +4,7 @@ resource "aws_lb" "sandbox_lb" {
   subnets                    = var.subnet_ids
   security_groups            = var.public ? [aws_security_group.sandbox_lb_sg_public[0].id] : [aws_security_group.sandbox_lb_sg_internal[0].id]
   drop_invalid_header_fields = true
+  internal                   = var.public ? true : false
 }
 
 resource "aws_lb_listener" "listener" {
@@ -82,24 +83,13 @@ resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group_rule" "sandbox_lb_sg_egress" {
-  count                    = var.public ? 1 : 0
-  description              = "Allow egress for the EC2 instances"
-  type                     = "egress"
-  security_group_id        = aws_security_group.sandbox_lb_sg_public[0].id
-  from_port                = var.server_port
-  to_port                  = var.server_port
-  protocol                 = "tcp"
-  source_security_group_id = var.security_group
-}
-
-resource "aws_security_group_rule" "sandbox_lb_sg_private_ingress" {
+resource "aws_security_group_rule" "sandbox_lb_sg_internal_ingress" {
   count                    = var.public ? 0 : 1
   description              = "Allow access from web servers"
   type                     = "ingress"
   security_group_id        = aws_security_group.sandbox_lb_sg_internal[0].id
-  from_port                = var.server_port
-  to_port                  = var.server_port
+  from_port                = local.http
+  to_port                  = local.http
   protocol                 = "tcp"
   source_security_group_id = var.security_group
 }
