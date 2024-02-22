@@ -44,6 +44,7 @@ module "ec2-web" {
   public                   = true
   public_loadbalancer_sg   = module.web-loadbalancer.alb_security_group_id
   internal_loadbalancer_sg = module.app-loadbalancer.alb_security_group_id
+  app_alb_fqdn             = module.app-loadbalancer.alb_fqdn
   providers = {
     aws = aws.sandbox
   }
