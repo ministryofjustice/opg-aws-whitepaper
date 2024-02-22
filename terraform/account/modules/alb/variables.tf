@@ -37,6 +37,11 @@ variable "security_group" {
   type        = string
 }
 
+variable "ec2_inbound_sg" {
+  description = "The EC2 inbound security group to allow traffic"
+  type        = string
+}
+
 variable "public" {
   description = "The bool to check if the loadbalancer is publi"
   type        = bool

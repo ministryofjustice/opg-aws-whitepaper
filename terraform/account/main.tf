@@ -15,6 +15,7 @@ module "web-loadbalancer" {
   server_port        = local.web_server_port
   security_group     = module.ec2-web.public_security_group_id
   cluster_name       = "public-web-${local.web_cluster_name}"
+  ec2_inbound_sg     = module.ec2-web.public_security_group_id
   providers = {
     aws = aws.sandbox
   }
@@ -29,6 +30,7 @@ module "app-loadbalancer" {
   server_port        = local.app_server_port
   security_group     = module.ec2-app.private_security_group_id
   cluster_name       = "private-app-${local.app_cluster_name}"
+  ec2_inbound_sg     = module.ec2-app.inbound_security_group_id
   providers = {
     aws = aws.sandbox
   }
