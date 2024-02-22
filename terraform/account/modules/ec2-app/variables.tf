@@ -19,17 +19,9 @@ variable "subnet_ids" {
   type        = set(string)
 }
 
-
-
 variable "cluster_name" {
   description = "The name for the cluster of resources"
   type        = string
-}
-
-variable "public" {
-  description = "Whether the EC2 instance is publicly accessible"
-  type        = bool
-  default     = false
 }
 
 variable "app_alb_fqdn" {
@@ -46,9 +38,4 @@ variable "app_server_port" {
 variable "vpc_id" {
   description = "The VPC for the loadbalancer to use"
   type        = string
-}
-
-variable "web" {
-  description = "Bool to set web or app server to bypass public"
-  type        = bool
 }
