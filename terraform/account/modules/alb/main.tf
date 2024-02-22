@@ -4,7 +4,7 @@ resource "aws_lb" "sandbox_lb" {
   subnets                    = var.subnet_ids
   security_groups            = var.public ? [aws_security_group.sandbox_lb_sg_public[0].id] : [aws_security_group.sandbox_lb_sg_internal[0].id]
   drop_invalid_header_fields = true
-  internal                   = var.public ? true : false
+  internal                   = var.public ? false : true
 }
 
 resource "aws_lb_listener" "listener" {
