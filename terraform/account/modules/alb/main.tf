@@ -2,7 +2,7 @@ resource "aws_lb" "sandbox_lb" {
   name                       = "${var.cluster_name}-lb"
   load_balancer_type         = "application"
   subnets                    = var.subnet_ids
-  security_groups            = var.public ? [aws_security_group.sandbox_lb_sg_public[0].id] : [aws_security_group.sandbox_lb_sg_internal[0].id]
+  security_groups            = var.public ? [aws_security_group.sandbox_lb_sg_public[0].id, aws_security_group.lb_healthcheck.id] : [aws_security_group.sandbox_lb_sg_internal[0].id, aws_security_group.lb_healthcheck.id]
   drop_invalid_header_fields = true
   internal                   = var.public ? false : true
 }
@@ -50,7 +50,7 @@ resource "aws_lb_target_group" "sandbox_asg" {
     path                = "/health"
     protocol            = "HTTP"
     matcher             = "200"
-    interval            = 60
+    interval            = 20
     timeout             = 3
     healthy_threshold   = 3
     unhealthy_threshold = 3
@@ -71,6 +71,21 @@ resource "aws_security_group" "sandbox_lb_sg_internal" {
   description = "Loadbalancer security group"
 }
 
+resource "aws_security_group" "lb_healthcheck" {
+  description = "Loadbalancer health checks"
+  vpc_id      = var.vpc_id
+  name        = "${var.cluster_name}-healthcheck"
+}
+
+resource "aws_security_group_rule" "lb_healthcheck" {
+  description              = "Healthcheck"
+  type                     = "egress"
+  security_group_id        = aws_security_group.lb_healthcheck.id
+  from_port                = var.server_port
+  to_port                  = var.server_port
+  protocol                 = "tcp"
+  source_security_group_id = var.ec2_inbound_sg
+}
 
 resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
   count             = var.public ? 1 : 0
