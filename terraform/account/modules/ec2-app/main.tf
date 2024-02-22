@@ -15,7 +15,7 @@ resource "aws_launch_configuration" "sandbox" {
   }
 
   lifecycle {
-    create_before_destroy = false
+    create_before_destroy = true
   }
 
   user_data = local.app_data_script
