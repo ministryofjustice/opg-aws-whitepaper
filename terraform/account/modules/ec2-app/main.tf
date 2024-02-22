@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "sandbox" {
   image_id                    = "ami-0905a3c97561e0b69"
   instance_type               = "t2.micro"
-  security_groups             = [aws_security_group.private-inbound.id, aws_security_group.ec2-ssh.id, aws_security_group.outbound.id]
+  security_groups             = [aws_security_group.inbound.id, aws_security_group.ec2-ssh.id, aws_security_group.internet-outbound.id]
   name_prefix                 = var.cluster_name
   associate_public_ip_address = true
   key_name                    = "sandbox"
@@ -32,20 +32,36 @@ resource "aws_autoscaling_group" "sandbox" {
   max_size = 2
 }
 
-resource "aws_security_group" "private-inbound" {
+resource "aws_security_group" "inbound" {
   vpc_id      = var.vpc_id
-  name        = "${var.cluster_name}-private-inbound-sg"
-  description = "Allow internal inbound HTTP traffic"
+  name        = "${var.cluster_name}-inbound-sg"
+  description = "Allow inbound HTTP traffic"
 }
 
-resource "aws_security_group_rule" "private-inbound" {
-  description              = "Allow ingress from private ALB"
+resource "aws_security_group_rule" "inbound" {
+  description              = "Allow ingress from internal ALB"
   type                     = "ingress"
-  security_group_id        = aws_security_group.private-inbound.id
+  security_group_id        = aws_security_group.inbound.id
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
-  source_security_group_id = var.alb_security_group
+  source_security_group_id = var.internal_loadbalancer_sg
+}
+
+resource "aws_security_group" "internet-outbound" {
+  description = "Allow outbound to clone git repo etc"
+  vpc_id      = var.vpc_id
+  name        = "${var.cluster_name}-outbound"
+}
+
+resource "aws_security_group_rule" "internet-outbound" {
+  description       = "Allow outbound"
+  type              = "egress"
+  security_group_id = aws_security_group.internet-outbound.id
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group" "ec2-ssh" {
@@ -61,21 +77,5 @@ resource "aws_security_group_rule" "ec2-ssh" {
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-}
-
-resource "aws_security_group" "outbound" {
-  description = "Allow outbound for curls and clones"
-  vpc_id      = var.vpc_id
-  name        = "${var.cluster_name}-outbound"
-}
-
-resource "aws_security_group_rule" "outbound" {
-  description       = "Allow outbound"
-  type              = "egress"
-  security_group_id = aws_security_group.outbound.id
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
 }

@@ -44,7 +44,7 @@ resource "aws_security_group_rule" "public-inbound" {
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
-  source_security_group_id = var.alb_security_group
+  source_security_group_id = var.public_loadbalancer_sg
 }
 
 resource "aws_security_group" "public-outbound" {
