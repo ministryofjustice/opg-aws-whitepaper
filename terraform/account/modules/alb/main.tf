@@ -50,7 +50,7 @@ resource "aws_lb_target_group" "sandbox_asg" {
     path                = "/health"
     protocol            = "HTTP"
     matcher             = "200"
-    interval            = 60
+    interval            = 20
     timeout             = 3
     healthy_threshold   = 3
     unhealthy_threshold = 3
@@ -61,18 +61,10 @@ resource "aws_security_group" "sandbox_lb_sg_public" {
   count       = var.public ? 1 : 0
   vpc_id      = var.vpc_id
   name        = "${var.cluster_name}-lb-sg"
-  description = "Loadbalancer security group"
+  description = "Loadbalancer public security group"
 }
 
-resource "aws_security_group" "sandbox_lb_sg_internal" {
-  count       = var.public ? 0 : 1
-  vpc_id      = var.vpc_id
-  name        = "${var.cluster_name}-lb-sg"
-  description = "Loadbalancer security group"
-}
-
-
-resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
+resource "aws_security_group_rule" "sandbox_lb_sg_public" {
   count             = var.public ? 1 : 0
   description       = "Allow access from internet"
   type              = "ingress"
@@ -83,13 +75,42 @@ resource "aws_security_group_rule" "sandbox_lb_sg_ingress" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group_rule" "sandbox_lb_sg_internal_ingress" {
+resource "aws_security_group_rule" "sandbox_lb_sg_public_outbound" {
+  count                    = var.public ? 1 : 0
+  description              = "Allow egress to the web servers"
+  type                     = "egress"
+  security_group_id        = aws_security_group.sandbox_lb_sg_public[0].id
+  from_port                = var.server_port
+  to_port                  = var.server_port
+  protocol                 = "tcp"
+  source_security_group_id = var.ec2_security_group
+}
+
+resource "aws_security_group" "sandbox_lb_sg_internal" {
+  count       = var.public ? 0 : 1
+  vpc_id      = var.vpc_id
+  name        = "${var.cluster_name}-lb-sg"
+  description = "Loadbalancer private security group"
+}
+
+resource "aws_security_group_rule" "sandbox_lb_sg_internal" {
   count                    = var.public ? 0 : 1
   description              = "Allow access from web servers"
   type                     = "ingress"
   security_group_id        = aws_security_group.sandbox_lb_sg_internal[0].id
-  from_port                = local.http
-  to_port                  = local.http
+  from_port                = var.server_port
+  to_port                  = var.server_port
   protocol                 = "tcp"
-  source_security_group_id = var.security_group
+  source_security_group_id = var.ec2_security_group
+}
+
+resource "aws_security_group_rule" "sandbox_lb_sg_internal_egress" {
+  count                    = var.public ? 0 : 1
+  description              = "Allow egress to the app servers"
+  type                     = "egress"
+  security_group_id        = aws_security_group.sandbox_lb_sg_internal[0].id
+  from_port                = var.server_port
+  to_port                  = var.server_port
+  protocol                 = "tcp"
+  source_security_group_id = var.ec2_security_group
 }
