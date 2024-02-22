@@ -9,7 +9,7 @@ variable "target_group_arns" {
   type        = set(string)
 }
 
-variable "alb_security_group" {
+variable "public_loadbalancer_sg" {
   description = "The security group from the ALB"
   type        = string
 }
