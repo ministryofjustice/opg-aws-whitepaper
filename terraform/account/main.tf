@@ -36,28 +36,29 @@ module "app-loadbalancer" {
 
 module "ec2-web" {
   source                   = "./modules/ec2-web"
-  alb_security_group       = module.web-loadbalancer.alb_security_group_id
   vpc_id                   = module.network.vpc.id
   target_group_arns        = module.web-loadbalancer.target_group_arns
   subnet_ids               = module.network.public_subnet_ids
-  server_port              = local.web_server_port
   cluster_name             = local.web_cluster_name
+  server_port              = local.web_server_port
   public                   = true
+  public_loadbalancer_sg   = module.web-loadbalancer.alb_security_group_id
   internal_loadbalancer_sg = module.app-loadbalancer.alb_security_group_id
+  app_alb_fqdn             = module.app-loadbalancer.alb_fqdn
   providers = {
     aws = aws.sandbox
   }
 }
 
 module "ec2-app" {
-  source             = "./modules/ec2-app"
-  alb_security_group = module.web-loadbalancer.alb_security_group_id
-  vpc_id             = module.network.vpc.id
-  target_group_arns  = module.app-loadbalancer.target_group_arns
-  subnet_ids         = module.network.private_subnet_ids
-  server_port        = local.app_server_port
-  cluster_name       = local.app_cluster_name
-  app_server_port    = local.app_server_port
+  source                   = "./modules/ec2-app"
+  vpc_id                   = module.network.vpc.id
+  target_group_arns        = module.app-loadbalancer.target_group_arns
+  subnet_ids               = module.network.private_subnet_ids
+  server_port              = local.app_server_port
+  cluster_name             = local.app_cluster_name
+  app_server_port          = local.app_server_port
+  internal_loadbalancer_sg = module.app-loadbalancer.alb_security_group_id
   providers = {
     aws = aws.sandbox
   }
