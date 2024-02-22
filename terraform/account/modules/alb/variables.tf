@@ -32,13 +32,8 @@ variable "availability_zones" {
   type        = set(string)
 }
 
-variable "security_group" {
+variable "ec2_security_group" {
   description = "The EC2 security group for outbound traffic"
-  type        = string
-}
-
-variable "ec2_inbound_sg" {
-  description = "The EC2 inbound security group to allow traffic"
   type        = string
 }
 
