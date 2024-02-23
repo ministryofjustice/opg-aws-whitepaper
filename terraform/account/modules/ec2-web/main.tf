@@ -1,7 +1,7 @@
 resource "aws_launch_configuration" "sandbox" {
   image_id                    = "ami-0905a3c97561e0b69"
   instance_type               = "t2.micro"
-  security_groups             = [aws_security_group.public-inbound.id, aws_security_group.ec2-ssh.id, aws_security_group.public-outbound.id]
+  security_groups             = [aws_security_group.outbound-to-loadbalancer.id, aws_security_group.public-inbound.id, aws_security_group.ec2-ssh.id, aws_security_group.public-outbound.id]
   associate_public_ip_address = true
   key_name                    = "sandbox"
 
@@ -82,7 +82,7 @@ resource "aws_security_group_rule" "ec2-ssh" {
 resource "aws_security_group" "outbound-to-loadbalancer" {
   description = "Allow outbound traffic to the internal loadbalancer"
   vpc_id      = var.vpc_id
-  name        = "${var.cluster_name}-to-loadbalancer"
+  name        = "${var.cluster_name}-outbound-to-loadbalancer"
 }
 
 resource "aws_security_group_rule" "outbound-to-loadbalancer" {

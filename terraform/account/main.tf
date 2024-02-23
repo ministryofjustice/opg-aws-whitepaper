@@ -13,8 +13,8 @@ module "web-loadbalancer" {
   subnet_ids         = module.network.public_subnet_ids
   availability_zones = data.aws_availability_zones.default.names
   server_port        = local.web_server_port
-  ec2_security_group = module.ec2-web.inbound_security_group_id
   cluster_name       = "public-web-${local.web_cluster_name}"
+  web_security_group = module.ec2-web.inbound_security_group
   providers = {
     aws = aws.sandbox
   }
@@ -27,7 +27,8 @@ module "app-loadbalancer" {
   subnet_ids         = module.network.private_subnet_ids
   availability_zones = data.aws_availability_zones.default.names
   server_port        = local.app_server_port
-  ec2_security_group = module.ec2-app.inbound_security_group_id
+  web_security_group = module.ec2-web.outbound_security_group
+  app_security_group = module.ec2-app.inbound_security_group
   cluster_name       = "private-app-${local.app_cluster_name}"
   providers = {
     aws = aws.sandbox
