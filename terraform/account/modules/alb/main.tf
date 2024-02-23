@@ -77,13 +77,13 @@ resource "aws_security_group_rule" "sandbox_lb_sg_public_ingress" {
 
 resource "aws_security_group_rule" "sandbox_lb_sg_public_egress" {
   count                    = var.public ? 1 : 0
-  description              = "Allow egress to the web servers"
+  description              = "Allow egress from loadbalancer to the web servers"
   type                     = "egress"
   security_group_id        = aws_security_group.sandbox_lb_sg_public[0].id
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
-  source_security_group_id = var.ec2_security_group
+  source_security_group_id = var.web_security_group
 }
 
 resource "aws_security_group" "sandbox_lb_sg_internal" {
@@ -101,7 +101,7 @@ resource "aws_security_group_rule" "sandbox_lb_sg_internal_ingress" {
   from_port                = local.http
   to_port                  = local.http
   protocol                 = "tcp"
-  source_security_group_id = var.ec2_security_group
+  source_security_group_id = var.web_security_group
 }
 
 resource "aws_security_group_rule" "sandbox_lb_sg_internal_egress" {
@@ -112,5 +112,5 @@ resource "aws_security_group_rule" "sandbox_lb_sg_internal_egress" {
   from_port                = var.server_port
   to_port                  = var.server_port
   protocol                 = "tcp"
-  source_security_group_id = var.ec2_security_group
+  source_security_group_id = var.app_security_group
 }

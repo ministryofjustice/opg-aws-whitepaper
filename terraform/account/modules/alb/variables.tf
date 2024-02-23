@@ -32,15 +32,24 @@ variable "availability_zones" {
   type        = set(string)
 }
 
-variable "ec2_security_group" {
-  description = "The EC2 security group for outbound traffic"
-  type        = string
-}
+
 
 variable "public" {
   description = "The bool to check if the loadbalancer is publi"
   type        = bool
   default     = false
+}
+
+variable "web_security_group" {
+  description = "The security group from the EC2 web instance to allow access from"
+  type        = string
+  default     = ""
+}
+
+variable "app_security_group" {
+  description = "The security group to allow egressoutbound traffic"
+  type        = string
+  default     = ""
 }
 
 /*
