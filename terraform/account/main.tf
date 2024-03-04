@@ -28,7 +28,7 @@ module "app-loadbalancer" {
   availability_zones = data.aws_availability_zones.default.names
   server_port        = local.app_server_port
   web_security_group = module.ec2-web.outbound_security_group
-  app_security_group = module.ec2-app.inbound_security_group
+  app_security_group = module.ec2-app.inbound_from_loadbalancer_security_group
   cluster_name       = "private-app-${local.app_cluster_name}"
   providers = {
     aws = aws.sandbox
