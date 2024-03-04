@@ -1,5 +1,11 @@
-variable "server_port" {
+variable "web_server_port" {
   description = "The port the server will use for HTTP requests"
+  type        = number
+  default     = 8000
+}
+
+variable "app_server_port" {
+  description = "The port the app server will use for requests"
   type        = number
   default     = 8080
 }
@@ -10,8 +16,9 @@ variable "target_group_arns" {
 }
 
 variable "public_loadbalancer_sg" {
-  description = "The security group from the ALB"
+  description = "The security group from the ALB to allow traffic from"
   type        = string
+  default     = ""
 }
 
 variable "subnet_ids" {
@@ -42,6 +49,6 @@ variable "vpc_id" {
 }
 
 variable "internal_loadbalancer_sg" {
-  description = "The security group of the internal loadbalancer"
+  description = "The security group of the internal loadbalancer to allow traffic to"
   type        = string
 }
